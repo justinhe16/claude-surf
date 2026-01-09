@@ -1,14 +1,6 @@
-# claude-surf
+# 🌊 `claude-surf` 🏄‍♂️
 
-Opinionated Claude Code agents and skills for autonomous software development.
-
-## TL;DR
-
-Give Claude a Linear ticket, get back a PR ready for human review. Fully autonomous.
-
-```
-/robot-surf ENG-123
-```
+Opinionated Claude Code agents, skills, and commands for autonomous software development.
 
 ## Install
 
@@ -40,7 +32,7 @@ claude
 
 ### Agents
 
-Agents are specialized AI assistants that Claude can delegate work to.
+Agents are specialized AI assistants that Claude can delegate work to. When you are under a `/solo-surf`, you can use any of these specific agents to help your work. 
 
 | Agent | What it does |
 |-------|--------------|
