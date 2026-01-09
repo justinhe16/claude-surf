@@ -32,6 +32,8 @@ Copy each skill directory (except global-surf itself, since it's only needed in 
 ```bash
 cp -r .claude/skills/solo-surf ~/.claude/skills/
 cp -r .claude/skills/robot-surf ~/.claude/skills/
+cp -r .claude/skills/prereq-surf-check ~/.claude/skills/
+cp -r .claude/skills/prep-surf-board ~/.claude/skills/
 ```
 
 ### Step 4: Verify Installation
@@ -57,10 +59,14 @@ Tell the user what was installed:
 **Skills installed to `~/.claude/skills/`:**
 - solo-surf
 - robot-surf
+- prereq-surf-check
+- prep-surf-board
 
 **How to use:**
 - Agents: "Use the orchestrator agent to..." or Claude auto-delegates based on task
 - Skills:
+  - `/prereq-surf-check` — check if all prerequisites are installed
+  - `/prep-surf-board` — install missing prerequisites
   - `/solo-surf feature/my-branch` — create worktree + new terminal
   - `/robot-surf ENG-123` — fully autonomous ticket implementation
 

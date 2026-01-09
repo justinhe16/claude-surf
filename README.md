@@ -10,9 +10,11 @@ Opinionated Claude Code agents and skills for automated software development wor
 - **code-reviewer** — reviews PRs for quality, security, and best practices
 
 ### Skills
-- **/global-surf** — install agents and skills globally for use in any project
+- **/prereq-surf-check** — check if all prerequisites are installed
+- **/prep-surf-board** — install missing prerequisites
+- **/global-surf** — install agents and skills globally
 - **/solo-surf** — spawn a git worktree with Claude in a new terminal
-- **/robot-surf** — fully autonomous: Linear ticket → implemented PR ready for review
+- **/robot-surf** — fully autonomous: Linear ticket → implemented PR
 
 ---
 
@@ -26,14 +28,48 @@ claude
 
 Then run:
 ```
-/global-surf
+/prereq-surf-check    # See what's missing
+/prep-surf-board      # Install missing prerequisites
+/global-surf          # Install agents and skills globally
 ```
-
-Agents and skills are now available globally in `~/.claude/`.
 
 ---
 
 ## Skills
+
+### /prereq-surf-check
+
+Checks if all prerequisites are installed for /solo-surf and /robot-surf.
+
+```
+/prereq-surf-check
+```
+
+**Checks for:**
+- Git with worktree support
+- GitHub CLI (`gh`) + authentication
+- Linear access (API key, CLI, or MCP)
+- Terminal apps (Hyper, iTerm, Terminal)
+- Projects directory
+
+**Output:** Table showing what's installed, what's missing, and how to fix it.
+
+### /prep-surf-board
+
+Installs and configures all missing prerequisites.
+
+```
+/prep-surf-board
+```
+
+**Can install:**
+- GitHub CLI via Homebrew
+- GitHub authentication
+- Linear CLI via npm
+- Linear MCP server (optional)
+- Projects directory
+
+Asks for confirmation before each installation.
 
 ### /global-surf
 
@@ -48,9 +84,7 @@ Installs all claude-surf agents and skills to your global config.
 | Type | Location | Items |
 |------|----------|-------|
 | Agents | `~/.claude/agents/` | orchestrator, software-engineer, code-reviewer |
-| Skills | `~/.claude/skills/` | solo-surf, robot-surf |
-
-Run once after cloning. Everything will be available in all your projects.
+| Skills | `~/.claude/skills/` | solo-surf, robot-surf, prereq-surf-check, prep-surf-board |
 
 ### /solo-surf
 
@@ -69,12 +103,6 @@ Creates a git worktree for a feature branch and opens a new terminal with Claude
 /solo-surf feature/user-auth
 /solo-surf bugfix/payment iTerm
 ```
-
-**What it does:**
-1. Creates worktree at `~/Projects/<repo>-<branch>`
-2. Copies config files (`.env*`, `.claude/*`, etc.)
-3. Opens your preferred terminal at the worktree
-4. Starts Claude (or prompts you to run it)
 
 ### /robot-surf
 
@@ -99,38 +127,9 @@ Fully autonomous ticket implementation. Give it a Linear ticket, get back a PR r
 6. Iterates between the two agents (max 3 rounds) until approved
 7. Reports the PR URL when ready for human eyes
 
-**Requirements:**
-- Linear API access (one of):
-  - `LINEAR_API_KEY` environment variable
-  - Linear CLI: `npm install -g @linear/cli && linear auth`
-  - Linear MCP server configured
-- GitHub CLI: `gh` (for PR operations)
-
-**Error handling:**
-- No ticket ID → explains usage
-- Invalid ticket format → explains expected format
-- Ticket not fetchable → explains how to configure Linear access
-- CI failures → reports and stops if unresolvable
-- Max iterations → reports remaining issues for manual review
-
 ---
 
 ## Agents
-
-### Usage
-
-**Direct invocation:**
-```
-Use the software-engineer agent to implement user authentication
-```
-```
-Use the code-reviewer agent to review PR #42
-```
-
-**Natural language** — Claude auto-delegates based on agent descriptions:
-```
-Implement the login feature, make sure tests pass, and create a PR
-```
 
 ### orchestrator
 
@@ -169,6 +168,19 @@ Reviews code for quality, security, and correctness.
 ---
 
 ## Workflow Examples
+
+### First time setup
+
+```bash
+> /prereq-surf-check
+# Shows: gh missing, Linear CLI missing
+
+> /prep-surf-board
+# Installs gh, authenticates, installs Linear CLI
+
+> /global-surf
+# Copies agents and skills to ~/.claude/
+```
 
 ### Manual: Create worktree, drive yourself
 
@@ -216,20 +228,6 @@ Your system prompt here...
 
 If your repo uses `main` instead of `master`, update the `MAIN_BRANCH` variable in the skill instructions.
 
-### Linear Access
-
-Configure one of:
-```bash
-# Option 1: API key
-export LINEAR_API_KEY=lin_api_xxxxx
-
-# Option 2: CLI
-npm install -g @linear/cli
-linear auth
-
-# Option 3: MCP server (in .mcp.json)
-```
-
 ---
 
 ## Structure
@@ -247,7 +245,11 @@ claude-surf/
 │       │   └── SKILL.md
 │       ├── solo-surf/
 │       │   └── SKILL.md
-│       └── robot-surf/
+│       ├── robot-surf/
+│       │   └── SKILL.md
+│       ├── prereq-surf-check/
+│       │   └── SKILL.md
+│       └── prep-surf-board/
 │           └── SKILL.md
 └── README.md
 ```
