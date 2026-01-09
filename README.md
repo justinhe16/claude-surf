@@ -1,22 +1,14 @@
 # claude-surf
 
-Opinionated Claude Code agents and skills for automated software development workflows.
+Opinionated Claude Code agents and skills for autonomous software development.
 
-## What's Included
+## TL;DR
 
-### Agents
-- **orchestrator** — coordinates multi-step tasks across agents
-- **software-engineer** — implements code, runs tests, creates PRs, handles CI
-- **code-reviewer** — reviews PRs for quality, security, and best practices
+Give Claude a Linear ticket, get back a PR ready for human review. Fully autonomous.
 
-### Skills
-- **/prereq-surf-check** — check if all prerequisites are installed
-- **/prep-surf-board** — install missing prerequisites
-- **/global-surf** — install agents and skills globally
-- **/solo-surf** — spawn a git worktree with Claude in a new terminal
-- **/robot-surf** — fully autonomous: Linear ticket → implemented PR
-
----
+```
+/robot-surf ENG-123
+```
 
 ## Install
 
@@ -26,207 +18,82 @@ cd claude-surf
 claude
 ```
 
-Then run:
 ```
-/prereq-surf-check    # See what's missing
-/prep-surf-board      # Install missing prerequisites
-/global-surf          # Install agents and skills globally
+/prereq-surf-check    # check what's missing
+/prep-surf-board      # install missing prerequisites
+/global-surf          # install agents + skills globally
 ```
+
+## Usage
+
+| Skill | Description |
+|-------|-------------|
+| `/prereq-surf-check` | Check if gh, Linear CLI, etc. are installed |
+| `/prep-surf-board` | Install missing prerequisites (gh, Linear CLI, etc.) |
+| `/global-surf` | Copy all agents and skills to `~/.claude/` for global use |
+| `/solo-surf <branch> [terminal]` | Create git worktree + open new terminal with Claude |
+| `/robot-surf <ticket-id>` | Autonomous: Linear ticket → implemented PR with code review |
 
 ---
 
-## Skills
+## Agents & Skills
 
-### /prereq-surf-check
+### Agents
 
-Checks if all prerequisites are installed for /solo-surf and /robot-surf.
+Agents are specialized AI assistants that Claude can delegate work to.
 
-```
-/prereq-surf-check
-```
+| Agent | What it does |
+|-------|--------------|
+| **orchestrator** | Coordinates multi-step tasks, spawns other agents, manages iteration loops |
+| **software-engineer** | Implements features, runs tests, creates PRs, monitors CI, fixes failures |
+| **code-reviewer** | Reviews PRs for bugs, security issues, code quality; approves or requests changes |
 
-**Checks for:**
-- Git with worktree support
-- GitHub CLI (`gh`) + authentication
-- Linear access (API key, CLI, or MCP)
-- Terminal apps (Hyper, iTerm, Terminal)
-- Projects directory
+### Skills
 
-**Output:** Table showing what's installed, what's missing, and how to fix it.
+Skills are slash commands that teach Claude how to do specific workflows.
 
-### /prep-surf-board
+| Skill | What it does |
+|-------|--------------|
+| **prereq-surf-check** | Checks for git, gh CLI, Linear access, terminal apps |
+| **prep-surf-board** | Installs gh via Homebrew, Linear CLI via npm, handles auth |
+| **global-surf** | Copies agents + skills to ~/.claude/ for use in any project |
+| **solo-surf** | Creates git worktree, copies .env files, opens terminal with Claude |
+| **robot-surf** | Full automation: fetch ticket → implement → PR → CI → code review → done |
 
-Installs and configures all missing prerequisites.
+### The Robot-Surf Loop
 
-```
-/prep-surf-board
-```
-
-**Can install:**
-- GitHub CLI via Homebrew
-- GitHub authentication
-- Linear CLI via npm
-- Linear MCP server (optional)
-- Projects directory
-
-Asks for confirmation before each installation.
-
-### /global-surf
-
-Installs all claude-surf agents and skills to your global config.
-
-```
-/global-surf
-```
-
-**What gets installed:**
-
-| Type | Location | Items |
-|------|----------|-------|
-| Agents | `~/.claude/agents/` | orchestrator, software-engineer, code-reviewer |
-| Skills | `~/.claude/skills/` | solo-surf, robot-surf, prereq-surf-check, prep-surf-board |
-
-### /solo-surf
-
-Creates a git worktree for a feature branch and opens a new terminal with Claude ready.
-
-```
-/solo-surf <branch-name> [terminal]
-```
-
-**Arguments:**
-- `branch-name` (required): The feature branch name
-- `terminal` (optional): `Hyper`, `iTerm`, or `Terminal`. Default: `Hyper`
-
-**Examples:**
-```
-/solo-surf feature/user-auth
-/solo-surf bugfix/payment iTerm
-```
-
-### /robot-surf
-
-Fully autonomous ticket implementation. Give it a Linear ticket, get back a PR ready for human review.
-
-```
-/robot-surf <linear-ticket-id>
-```
-
-**Examples:**
 ```
 /robot-surf ENG-123
-/robot-surf PROJ-456
-```
-
-**What it does:**
-1. Fetches the Linear ticket details
-2. Creates a git worktree with branch named after the ticket
-3. Spawns **software-engineer** agent to implement the feature
-4. Creates PR, monitors CI/CD, fixes any failures
-5. Spawns **code-reviewer** agent to review the PR
-6. Iterates between the two agents (max 3 rounds) until approved
-7. Reports the PR URL when ready for human eyes
-
----
-
-## Agents
-
-### orchestrator
-
-Coordinates complex tasks across specialist agents.
-
-**The loop:**
-1. Spawns software-engineer to implement
-2. Waits for PR + green CI
-3. Spawns code-reviewer to review
-4. If issues found, spawns software-engineer with feedback
-5. Repeats until both agents agree (max 3 iterations)
-
-### software-engineer
-
-Implements code with a test-driven feedback loop.
-
-**Process:**
-1. Understand the codebase
-2. Implement the change
-3. Run tests until green
-4. Create PR
-5. Monitor CI, fix failures
-6. Report PR URL when done
-
-### code-reviewer
-
-Reviews code for quality, security, and correctness.
-
-**Checks for:**
-- Logic errors and edge cases
-- Security vulnerabilities
-- Code quality and readability
-- Test coverage
-- Performance issues
-
----
-
-## Workflow Examples
-
-### First time setup
-
-```bash
-> /prereq-surf-check
-# Shows: gh missing, Linear CLI missing
-
-> /prep-surf-board
-# Installs gh, authenticates, installs Linear CLI
-
-> /global-surf
-# Copies agents and skills to ~/.claude/
-```
-
-### Manual: Create worktree, drive yourself
-
-```bash
-> /solo-surf feature/user-auth
-
-# Opens new terminal at ~/Projects/myapp-feature/user-auth
-# You drive Claude manually in the new session
-```
-
-### Autonomous: Ticket to PR
-
-```bash
-> /robot-surf ENG-123
-
-# Claude takes over:
-# - Creates worktree
-# - Reads ticket, implements feature
-# - Runs tests, creates PR
-# - Monitors CI, fixes failures
-# - Reviews code, addresses feedback
-# - Reports: "PR #42 ready for human review"
+       │
+       ▼
+┌─────────────────────────────────────┐
+│  1. Fetch Linear ticket             │
+│  2. Create git worktree + branch    │
+│  3. software-engineer implements    │
+│  4. Create PR, wait for CI green    │
+│  5. code-reviewer reviews           │
+│  6. If issues → back to step 3      │
+│  7. Repeat until approved (max 3x)  │
+│  8. Report: "PR ready for review"   │
+└─────────────────────────────────────┘
 ```
 
 ---
 
 ## Customization
 
-### Agents
-
-Edit files in `.claude/agents/` (project) or `~/.claude/agents/` (global):
+Agents live in `.claude/agents/` (project) or `~/.claude/agents/` (global).
 
 ```markdown
 ---
 name: my-agent
-description: When Claude should use this agent
+description: When to use this agent
 tools: Read, Edit, Write, Bash
 model: sonnet
 ---
 
 Your system prompt here...
 ```
-
-### Main Branch
-
-If your repo uses `main` instead of `master`, update the `MAIN_BRANCH` variable in the skill instructions.
 
 ---
 
@@ -235,22 +102,16 @@ If your repo uses `main` instead of `master`, update the `MAIN_BRANCH` variable 
 ```
 claude-surf/
 ├── .claude/
-│   ├── settings.json
 │   ├── agents/
 │   │   ├── orchestrator.md
 │   │   ├── software-engineer.md
 │   │   └── code-reviewer.md
 │   └── skills/
-│       ├── global-surf/
-│       │   └── SKILL.md
-│       ├── solo-surf/
-│       │   └── SKILL.md
-│       ├── robot-surf/
-│       │   └── SKILL.md
 │       ├── prereq-surf-check/
-│       │   └── SKILL.md
-│       └── prep-surf-board/
-│           └── SKILL.md
+│       ├── prep-surf-board/
+│       ├── global-surf/
+│       ├── solo-surf/
+│       └── robot-surf/
 └── README.md
 ```
 
