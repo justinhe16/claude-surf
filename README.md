@@ -10,7 +10,7 @@ Opinionated Claude Code agents and skills for automated software development wor
 - **code-reviewer** — reviews PRs for quality, security, and best practices
 
 ### Skills
-- **/surf-global** — install agents globally for use in any project
+- **/global-surf** — install agents and skills globally for use in any project
 - **/solo-surf** — spawn a git worktree with Claude in a new terminal
 
 ---
@@ -25,24 +25,33 @@ claude
 
 Then run:
 ```
-/surf-global
+/global-surf
 ```
 
-Agents are now available globally in `~/.claude/agents/`.
+Agents and skills are now available globally in `~/.claude/`.
 
 ---
 
 ## Skills
 
-### /surf-global
+### /global-surf
 
-Copies all claude-surf agents to your global config (`~/.claude/agents/`).
+Installs all claude-surf agents and skills to your global config.
 
 ```
-/surf-global
+/global-surf
 ```
 
-Run once after cloning. Agents will be available in all your projects.
+**What gets installed:**
+
+| Type | Location | Items |
+|------|----------|-------|
+| Agents | `~/.claude/agents/` | orchestrator, software-engineer, code-reviewer |
+| Skills | `~/.claude/skills/` | solo-surf |
+
+Run once after cloning. Everything will be available in all your projects.
+
+To update, pull latest changes and re-run `/global-surf`.
 
 ### /solo-surf
 
@@ -189,7 +198,7 @@ claude-surf/
 │   │   ├── software-engineer.md
 │   │   └── code-reviewer.md
 │   └── skills/
-│       ├── surf-global/
+│       ├── global-surf/
 │       │   └── SKILL.md
 │       └── solo-surf/
 │           └── SKILL.md
