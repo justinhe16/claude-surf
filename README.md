@@ -12,6 +12,7 @@ Opinionated Claude Code agents and skills for automated software development wor
 ### Skills
 - **/global-surf** — install agents and skills globally for use in any project
 - **/solo-surf** — spawn a git worktree with Claude in a new terminal
+- **/robot-surf** — fully autonomous: Linear ticket → implemented PR ready for review
 
 ---
 
@@ -47,11 +48,9 @@ Installs all claude-surf agents and skills to your global config.
 | Type | Location | Items |
 |------|----------|-------|
 | Agents | `~/.claude/agents/` | orchestrator, software-engineer, code-reviewer |
-| Skills | `~/.claude/skills/` | solo-surf |
+| Skills | `~/.claude/skills/` | solo-surf, robot-surf |
 
 Run once after cloning. Everything will be available in all your projects.
-
-To update, pull latest changes and re-run `/global-surf`.
 
 ### /solo-surf
 
@@ -69,17 +68,50 @@ Creates a git worktree for a feature branch and opens a new terminal with Claude
 ```
 /solo-surf feature/user-auth
 /solo-surf bugfix/payment iTerm
-/solo-surf feature/dashboard Terminal
 ```
 
 **What it does:**
 1. Creates worktree at `~/Projects/<repo>-<branch>`
-2. Checks out existing remote branch, or creates new branch from master
-3. Copies config files: `.env*`, `.envrc`, `.python-version`, `.node-version`, `.claude/settings.json`, `.mcp.json`
-4. Opens your preferred terminal at the worktree
-5. Starts Claude (for iTerm/Terminal) or prompts you to run `claude` (Hyper)
+2. Copies config files (`.env*`, `.claude/*`, etc.)
+3. Opens your preferred terminal at the worktree
+4. Starts Claude (or prompts you to run it)
 
-**Note:** The new Claude session is independent—no shared context with your current session.
+### /robot-surf
+
+Fully autonomous ticket implementation. Give it a Linear ticket, get back a PR ready for human review.
+
+```
+/robot-surf <linear-ticket-id>
+```
+
+**Examples:**
+```
+/robot-surf ENG-123
+/robot-surf PROJ-456
+```
+
+**What it does:**
+1. Fetches the Linear ticket details
+2. Creates a git worktree with branch named after the ticket
+3. Spawns **software-engineer** agent to implement the feature
+4. Creates PR, monitors CI/CD, fixes any failures
+5. Spawns **code-reviewer** agent to review the PR
+6. Iterates between the two agents (max 3 rounds) until approved
+7. Reports the PR URL when ready for human eyes
+
+**Requirements:**
+- Linear API access (one of):
+  - `LINEAR_API_KEY` environment variable
+  - Linear CLI: `npm install -g @linear/cli && linear auth`
+  - Linear MCP server configured
+- GitHub CLI: `gh` (for PR operations)
+
+**Error handling:**
+- No ticket ID → explains usage
+- Invalid ticket format → explains expected format
+- Ticket not fetchable → explains how to configure Linear access
+- CI failures → reports and stops if unresolvable
+- Max iterations → reports remaining issues for manual review
 
 ---
 
@@ -94,9 +126,6 @@ Use the software-engineer agent to implement user authentication
 ```
 Use the code-reviewer agent to review PR #42
 ```
-```
-Use the orchestrator to implement this feature and iterate with code review
-```
 
 **Natural language** — Claude auto-delegates based on agent descriptions:
 ```
@@ -105,11 +134,9 @@ Implement the login feature, make sure tests pass, and create a PR
 
 ### orchestrator
 
-Coordinates complex tasks. Spawns other agents, passes context between them, manages iteration cycles.
+Coordinates complex tasks across specialist agents.
 
-**When to use**: Multi-step workflows, feature implementation with review.
-
-**The loop**:
+**The loop:**
 1. Spawns software-engineer to implement
 2. Waits for PR + green CI
 3. Spawns code-reviewer to review
@@ -120,7 +147,7 @@ Coordinates complex tasks. Spawns other agents, passes context between them, man
 
 Implements code with a test-driven feedback loop.
 
-**Process**:
+**Process:**
 1. Understand the codebase
 2. Implement the change
 3. Run tests until green
@@ -132,34 +159,38 @@ Implements code with a test-driven feedback loop.
 
 Reviews code for quality, security, and correctness.
 
-**Checks for**:
+**Checks for:**
 - Logic errors and edge cases
 - Security vulnerabilities
 - Code quality and readability
 - Test coverage
 - Performance issues
 
-**Output**: Verdict (approve/request changes) with categorized feedback.
-
 ---
 
-## Workflow Example
+## Workflow Examples
+
+### Manual: Create worktree, drive yourself
 
 ```bash
-# In your main repo, spawn a feature branch
 > /solo-surf feature/user-auth
 
-# Claude creates worktree, opens new Hyper window
-# In the new terminal, Claude is ready
+# Opens new terminal at ~/Projects/myapp-feature/user-auth
+# You drive Claude manually in the new session
+```
 
-# Use the orchestrator for end-to-end implementation:
-> Use the orchestrator to implement JWT authentication based on this spec...
+### Autonomous: Ticket to PR
 
-# Orchestrator:
-# 1. Spawns software-engineer → implements, tests, creates PR
-# 2. Spawns code-reviewer → reviews, posts comments
-# 3. Loops until approved
-# 4. Reports: "PR #42 ready for human review"
+```bash
+> /robot-surf ENG-123
+
+# Claude takes over:
+# - Creates worktree
+# - Reads ticket, implements feature
+# - Runs tests, creates PR
+# - Monitors CI, fixes failures
+# - Reviews code, addresses feedback
+# - Reports: "PR #42 ready for human review"
 ```
 
 ---
@@ -183,7 +214,21 @@ Your system prompt here...
 
 ### Main Branch
 
-If your repo uses `main` instead of `master`, update the `MAIN_BRANCH` variable in the `/solo-surf` skill instructions.
+If your repo uses `main` instead of `master`, update the `MAIN_BRANCH` variable in the skill instructions.
+
+### Linear Access
+
+Configure one of:
+```bash
+# Option 1: API key
+export LINEAR_API_KEY=lin_api_xxxxx
+
+# Option 2: CLI
+npm install -g @linear/cli
+linear auth
+
+# Option 3: MCP server (in .mcp.json)
+```
 
 ---
 
@@ -200,7 +245,9 @@ claude-surf/
 │   └── skills/
 │       ├── global-surf/
 │       │   └── SKILL.md
-│       └── solo-surf/
+│       ├── solo-surf/
+│       │   └── SKILL.md
+│       └── robot-surf/
 │           └── SKILL.md
 └── README.md
 ```
