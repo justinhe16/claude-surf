@@ -1,6 +1,6 @@
 ---
 name: prep-surf-board
-description: Installs and configures all prerequisites needed for /solo-surf and /robot-surf. Handles gh, Linear CLI, directories, and more.
+description: Installs and configures all prerequisites needed for /solo-surf and /robot-surf. Handles gh, Linear MCP server, directories, and more.
 allowed-tools: Bash, Read, Write, Edit
 ---
 
@@ -26,21 +26,18 @@ gh --version 2>/dev/null
 # GitHub Auth
 gh auth status 2>/dev/null
 
-# Linear CLI
-linear --version 2>/dev/null
-
-# LINEAR_API_KEY
-[ -n "$LINEAR_API_KEY" ] && echo "LINEAR_API_KEY set"
-
-# Linear MCP
+# Linear MCP Server
 cat ~/.mcp.json 2>/dev/null | grep -i linear
-cat .mcp.json 2>/dev/null | grep -i linear
 
 # Projects directory
 [ -d "$HOME/Projects" ] && echo "Projects dir exists"
 
 # Homebrew (needed for installs)
 brew --version 2>/dev/null
+
+# Node.js/npm (needed for MCP)
+node --version 2>/dev/null
+npm --version 2>/dev/null
 ```
 
 ### Step 2: Report Findings and Confirm
@@ -56,12 +53,13 @@ Show the user what will be installed:
 
   [ ] GitHub CLI (gh)
   [ ] GitHub authentication
-  [ ] Linear CLI
+  [ ] Linear MCP server
   [ ] Projects directory
 
   Already installed:
   [✓] Git
   [✓] Homebrew
+  [✓] Node.js & npm
 
   Proceed with installation? (Will ask for confirmation at each step)
 ═══════════════════════════════════════════════════════════════
@@ -93,60 +91,42 @@ gh auth login
 
 Note: This is interactive. Run it and let the user complete the flow.
 
-#### Linear CLI
-
-```bash
-npm install -g @linear/cli
-```
-
-Then authenticate:
-```bash
-linear auth
-```
-
-Note: This is interactive. Run it and let the user complete the flow.
-
 #### Projects Directory
 
 ```bash
 mkdir -p "$HOME/Projects"
 ```
 
-### Step 4: Handle Linear MCP Server (Optional)
+### Step 4: Set Up Linear MCP Server
 
-Ask the user if they want to set up the Linear MCP server:
+This is REQUIRED for /robot-surf. Walk the user through getting their Linear API key:
 
 ```
 ═══════════════════════════════════════════════════════════════
-  LINEAR MCP SERVER (Optional)
+  LINEAR MCP SERVER SETUP
 ═══════════════════════════════════════════════════════════════
 
-  You can also set up the Linear MCP server for richer ticket access.
-  This requires a Linear API key.
+  Robot-surf requires Linear MCP server to fetch ticket details.
 
-  Options:
-  1. Skip (Linear CLI is sufficient)
-  2. Set up Linear MCP server
+  Step 1: Get your Linear API key
+  ─────────────────────────────────────
+  1. Visit: https://linear.app/settings/api
+  2. Click "Personal API keys" section
+  3. Click "Create key" or "New key"
+  4. Name it "Claude Surf" (or similar)
+  5. Copy the generated key (starts with lin_api_)
 
-  Note: You'll need a Linear API key from:
-  https://linear.app/settings/api
+  Step 2: Provide the key
+  ───────────────────────
+  Paste your Linear API key below when prompted.
+
 ═══════════════════════════════════════════════════════════════
 ```
 
-If they choose to set up MCP:
+After getting the API key from the user, create or update ~/.mcp.json:
 
-```bash
-# Check if ~/.mcp.json exists
-if [ -f ~/.mcp.json ]; then
-    # Add Linear server to existing config
-    echo "Adding Linear to existing MCP config..."
-else
-    # Create new config
-    echo "Creating MCP config..."
-fi
-```
-
-Example Linear MCP config to add:
+**If ~/.mcp.json doesn't exist:**
+Create it with:
 ```json
 {
   "mcpServers": {
@@ -161,6 +141,9 @@ Example Linear MCP config to add:
 }
 ```
 
+**If ~/.mcp.json exists:**
+Read the existing file, merge the linear server config, and write it back. Be careful not to overwrite other MCP servers.
+
 ### Step 5: Verify Installation
 
 After all installations, run the checks again:
@@ -172,7 +155,7 @@ echo "Verifying installation..."
 git --version
 gh --version
 gh auth status
-linear --version 2>/dev/null || echo "Linear CLI: not installed (optional)"
+cat ~/.mcp.json 2>/dev/null | grep -i linear && echo "Linear MCP: configured" || echo "Linear MCP: missing"
 [ -d "$HOME/Projects" ] && echo "Projects directory: OK"
 ```
 
@@ -183,14 +166,11 @@ linear --version 2>/dev/null || echo "Linear CLI: not installed (optional)"
   INSTALLATION COMPLETE
 ═══════════════════════════════════════════════════════════════
 
-  Installed:
+  Installed & Configured:
   ✓ GitHub CLI (gh)
   ✓ GitHub authentication
-  ✓ Linear CLI
+  ✓ Linear MCP server (configured in ~/.mcp.json)
   ✓ Projects directory
-
-  Skipped:
-  - Linear MCP server (optional)
 
 ═══════════════════════════════════════════════════════════════
   VERIFICATION
@@ -205,6 +185,14 @@ linear --version 2>/dev/null || echo "Linear CLI: not installed (optional)"
     /robot-surf ENG-123
 
 ═══════════════════════════════════════════════════════════════
+  CONFIGURATION FILES
+═══════════════════════════════════════════════════════════════
+
+  Linear MCP: ~/.mcp.json
+  - Configured with your Linear API key
+  - Used by /robot-surf to fetch ticket details
+
+═══════════════════════════════════════════════════════════════
 ```
 
 ## Error Handling
@@ -212,14 +200,17 @@ linear --version 2>/dev/null || echo "Linear CLI: not installed (optional)"
 | Error | Resolution |
 |-------|------------|
 | Homebrew not installed | Provide install command, ask user to run manually |
-| npm not available | Suggest installing Node.js first |
-| Auth fails | Explain how to retry manually |
-| Permission denied | Suggest running with sudo or fixing permissions |
+| Node.js/npm not available | Suggest installing Node.js first (required for MCP) |
+| gh auth fails | Explain how to retry manually with `gh auth login` |
+| Permission denied | Suggest fixing permissions or check file paths |
+| Linear API key invalid | Ask user to verify key from https://linear.app/settings/api |
+| MCP config malformed | Validate JSON syntax before writing |
 
 ## Notes
 
 - Always ask before installing anything
-- Interactive commands (gh auth, linear auth) require user input
-- Don't store API keys in plain text files without user consent
-- Prefer CLI tools over API keys when possible (easier setup)
+- Interactive commands (gh auth) require user input
+- Linear API key is stored in ~/.mcp.json - user must consent to this
+- The Linear MCP server is the ONLY supported method for Linear access
 - If something fails, continue with other items and report at end
+- Node.js/npm is required for the Linear MCP server (uses npx)

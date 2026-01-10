@@ -52,29 +52,16 @@ gh auth status
 - **Pass:** Logged in to github.com
 - **Fail:** Not authenticated
 
-### Check 5: Linear Access (any one of these)
+### Check 5: Linear MCP Server
 
-**Option A: LINEAR_API_KEY environment variable**
-```bash
-[ -n "$LINEAR_API_KEY" ] && echo "set" || echo "not set"
-```
-
-**Option B: Linear CLI**
-```bash
-linear --version 2>/dev/null
-```
-
-**Option C: Linear MCP Server**
-Check if .mcp.json exists and contains a linear server:
+Check if ~/.mcp.json exists and contains a linear server:
 ```bash
 cat ~/.mcp.json 2>/dev/null | grep -i linear
-# or
-cat .mcp.json 2>/dev/null | grep -i linear
 ```
 
 - **Required for:** /robot-surf
-- **Pass:** At least one option is configured
-- **Fail:** No Linear access configured
+- **Pass:** Linear MCP server is configured in ~/.mcp.json
+- **Fail:** No Linear MCP server configured
 
 ### Check 6: Terminal Apps (for /solo-surf)
 
@@ -120,7 +107,7 @@ Display results in a clear table:
   Git Worktree             ✓ Supported     solo-surf, robot-surf
   GitHub CLI (gh)          ✓ Installed     robot-surf
   GitHub Auth              ✓ Logged in     robot-surf
-  Linear Access            ✗ Missing       robot-surf
+  Linear MCP Server        ✗ Missing       robot-surf
   Terminal App             ✓ Hyper         solo-surf
   Projects Directory       ✓ Exists        solo-surf, robot-surf
 
@@ -135,22 +122,32 @@ Display results in a clear table:
   MISSING ITEMS
 ═══════════════════════════════════════════════════════════════
 
-  Linear Access
-  ─────────────
-  Robot-surf needs Linear access to fetch ticket details.
+  Linear MCP Server
+  ─────────────────
+  Robot-surf needs Linear MCP server to fetch ticket details.
 
-  Fix with ONE of these options:
+  Setup instructions:
 
-  Option 1: Set API key
-    export LINEAR_API_KEY=lin_api_xxxxx
-    (Add to ~/.zshrc or ~/.bashrc for persistence)
+  1. Get a Linear API key:
+     https://linear.app/settings/api
+     - Click "Personal API keys"
+     - Create a new key (name it "Claude Surf")
+     - Copy the key (starts with lin_api_)
 
-  Option 2: Install Linear CLI
-    npm install -g @linear/cli
-    linear auth
+  2. Run /prep-surf-board to automatically configure MCP
+     OR manually create ~/.mcp.json:
 
-  Option 3: Configure Linear MCP server
-    Add to .mcp.json or ~/.mcp.json
+     {
+       "mcpServers": {
+         "linear": {
+           "command": "npx",
+           "args": ["-y", "@linear/mcp-server"],
+           "env": {
+             "LINEAR_API_KEY": "lin_api_xxxxx"
+           }
+         }
+       }
+     }
 
 ═══════════════════════════════════════════════════════════════
   NEXT STEPS
