@@ -64,6 +64,31 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    font-weight: 400;
+  }
+  h1 {
+    @apply font-bold;
+    font-weight: 700;
+  }
+  h2 {
+    @apply font-semibold;
+    font-weight: 600;
+  }
+  h3 {
+    @apply font-semibold;
+    font-weight: 600;
+  }
+  h4 {
+    @apply font-medium;
+    font-weight: 500;
+  }
+  h5, h6 {
+    @apply font-medium;
+    font-weight: 500;
+  }
+  strong, b {
+    @apply font-semibold;
+    font-weight: 600;
   }
 }
