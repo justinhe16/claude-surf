@@ -2,13 +2,14 @@
   "name": "claude-surf-app",
   "version": "0.1.0",
   "description": "Visual dashboard for managing Claude Surf worktrees",
-  "main": "src/main/index.js",
+  "main": "dist-electron/main/index.js",
   "scripts": {
-    "dev": "concurrently \"vite\" \"electron .\"",
-    "build": "tsc && vite build && electron-builder",
-    "build:mac": "tsc && vite build && electron-builder --mac",
-    "build:win": "tsc && vite build && electron-builder --win",
-    "build:linux": "tsc && vite build && electron-builder --linux",
+    "dev": "concurrently \"vite\" \"npm run electron:dev\"",
+    "electron:dev": "tsc -p tsconfig.node.json && electron .",
+    "build": "tsc -p tsconfig.node.json && vite build && electron-builder",
+    "build:mac": "tsc -p tsconfig.node.json && vite build && electron-builder --mac",
+    "build:win": "tsc -p tsconfig.node.json && vite build && electron-builder --win",
+    "build:linux": "tsc -p tsconfig.node.json && vite build && electron-builder --linux",
     "vite": "vite"
   },
   "keywords": [
@@ -29,6 +30,7 @@
     "@radix-ui/react-slot": "^1.0.2"
   },
   "devDependencies": {
+    "@types/node": "^20.0.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@vitejs/plugin-react": "^4.2.0",
@@ -45,7 +47,7 @@
     "appId": "com.claudesurf.app",
     "productName": "Claude Surf",
     "files": [
-      "src/main/**/*",
+      "dist-electron/**/*",
       "dist/**/*",
       "package.json"
     ],

@@ -1,16 +1,23 @@
 // Electron main process
-// Phase 1: Basic setup with Vite dev server support
+// Phase 3: Secure IPC architecture with contextIsolation
 
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
+import { app, BrowserWindow } from 'electron';
+import * as path from 'path';
+import { registerIPCHandlers } from './ipc-handlers';
+
+let mainWindow: BrowserWindow | null = null;
 
 function createWindow() {
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
+      // Security: Enable context isolation
+      contextIsolation: true,
+      // Security: Disable node integration in renderer
+      nodeIntegration: false,
+      // Preload script exposes safe IPC API
+      preload: path.join(__dirname, '../preload/index.js'),
     },
   });
 
@@ -23,9 +30,16 @@ function createWindow() {
   } else {
     mainWindow.loadFile(path.join(__dirname, '../../dist/index.html'));
   }
+
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
 }
 
 app.whenReady().then(() => {
+  // Register IPC handlers before creating window
+  registerIPCHandlers();
+
   createWindow();
 
   app.on('activate', () => {
