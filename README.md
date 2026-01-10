@@ -9,9 +9,11 @@
 [![GitHub issues](https://img.shields.io/github/issues/justinhe16/claude-surf)](https://github.com/justinhe16/claude-surf/issues)
 [![GitHub last commit](https://img.shields.io/github/last-commit/justinhe16/claude-surf)](https://github.com/justinhe16/claude-surf/commits/main)
 
-Opinionated Claude Code agents, skills, and commands for autonomous software development.
+Opinionated Claude Code agents, skills, and commands for autonomous software development integrating Claude's agentic features with Linear MCP + Git Worktrees.
 
-## Install
+## Quick Start
+
+**CLI (Available Now):**
 
 ```bash
 git clone git@github.com:justinhe16/claude-surf.git
@@ -20,10 +22,14 @@ claude
 ```
 
 ```
-/check-surf    # check what's missing
-/prep-surf      # install missing prerequisites
-/global-surf          # install agents + skills globally
+/check-surf      # check what's missing
+/prep-surf       # install missing prerequisites
+/global-surf     # install agents + skills globally
 ```
+
+**Desktop App (Coming Soon):**
+
+Visual dashboard for managing worktrees - [download latest release](https://github.com/justinhe16/claude-surf/releases)
 
 ## Usage
 
@@ -103,16 +109,22 @@ Your system prompt here...
 ```
 claude-surf/
 ├── .claude/
-│   ├── agents/
+│   ├── agents/           # AI agents for delegated work
 │   │   ├── orchestrator.md
 │   │   ├── software-engineer.md
 │   │   └── code-reviewer.md
-│   └── skills/
+│   └── skills/           # Slash commands
 │       ├── check-surf/
 │       ├── prep-surf/
 │       ├── global-surf/
 │       ├── solo-surf/
 │       └── robot-surf/
+├── app/                  # Electron desktop app (WIP)
+│   ├── src/
+│   │   ├── main/         # Main process
+│   │   ├── renderer/     # UI
+│   │   └── shared/       # Shared code
+│   └── package.json
 └── README.md
 ```
 

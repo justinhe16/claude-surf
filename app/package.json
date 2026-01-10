@@ -1,0 +1,60 @@
+{
+  "name": "claude-surf-app",
+  "version": "0.1.0",
+  "description": "Visual dashboard for managing Claude Surf worktrees",
+  "main": "src/main/index.js",
+  "scripts": {
+    "dev": "electron .",
+    "build": "electron-builder",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux"
+  },
+  "keywords": [
+    "claude",
+    "git",
+    "worktree",
+    "dashboard",
+    "electron"
+  ],
+  "author": "justinhe16",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.0"
+  },
+  "build": {
+    "appId": "com.claudesurf.app",
+    "productName": "Claude Surf",
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "icon": "assets/icon.icns"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "zip"
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Development",
+      "icon": "assets/icon.png"
+    }
+  }
+}
