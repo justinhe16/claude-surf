@@ -6,7 +6,10 @@
       "Bash(gh:*)",
       "Bash(npm test:*)",
       "Bash(npm run:*)",
-      "Bash(pytest:*)"
+      "Bash(pytest:*)",
+      "Edit",
+      "Write",
+      "Read"
     ]
   }
 }

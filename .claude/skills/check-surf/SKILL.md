@@ -140,8 +140,7 @@ Display results in a clear table:
      {
        "mcpServers": {
          "linear": {
-           "command": "npx",
-           "args": ["-y", "@linear/mcp-server"],
+           "url": "https://mcp.linear.app/sse",
            "env": {
              "LINEAR_API_KEY": "lin_api_xxxxx"
            }

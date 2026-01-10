@@ -82,13 +82,22 @@ Error: Could not fetch Linear ticket "<ticket-id>".
 Possible reasons:
 1. Ticket ID doesn't exist
 2. You don't have access to this ticket
-3. Linear API key not configured
+3. Linear MCP server not configured
 4. Network error
 
-To configure Linear access:
-- Set LINEAR_API_KEY environment variable, OR
-- Install Linear CLI: npm install -g @linear/cli && linear auth, OR
-- Configure a Linear MCP server
+To configure Linear access, run /prep-surf or manually configure ~/.mcp.json:
+{
+  "mcpServers": {
+    "linear": {
+      "url": "https://mcp.linear.app/sse",
+      "env": {
+        "LINEAR_API_KEY": "your-linear-api-key"
+      }
+    }
+  }
+}
+
+Get your API key from: https://linear.app/settings/api
 
 Please verify the ticket ID and try again.
 ```

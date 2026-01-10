@@ -34,10 +34,6 @@ cat ~/.mcp.json 2>/dev/null | grep -i linear
 
 # Homebrew (needed for installs)
 brew --version 2>/dev/null
-
-# Node.js/npm (needed for MCP)
-node --version 2>/dev/null
-npm --version 2>/dev/null
 ```
 
 ### Step 2: Report Findings and Confirm
@@ -59,7 +55,6 @@ Show the user what will be installed:
   Already installed:
   [✓] Git
   [✓] Homebrew
-  [✓] Node.js & npm
 
   Proceed with installation? (Will ask for confirmation at each step)
 ═══════════════════════════════════════════════════════════════
@@ -131,8 +126,7 @@ Create it with:
 {
   "mcpServers": {
     "linear": {
-      "command": "npx",
-      "args": ["-y", "@linear/mcp-server"],
+      "url": "https://mcp.linear.app/sse",
       "env": {
         "LINEAR_API_KEY": "<user-provided-key>"
       }
@@ -200,7 +194,6 @@ cat ~/.mcp.json 2>/dev/null | grep -i linear && echo "Linear MCP: configured" ||
 | Error | Resolution |
 |-------|------------|
 | Homebrew not installed | Provide install command, ask user to run manually |
-| Node.js/npm not available | Suggest installing Node.js first (required for MCP) |
 | gh auth fails | Explain how to retry manually with `gh auth login` |
 | Permission denied | Suggest fixing permissions or check file paths |
 | Linear API key invalid | Ask user to verify key from https://linear.app/settings/api |
@@ -211,6 +204,5 @@ cat ~/.mcp.json 2>/dev/null | grep -i linear && echo "Linear MCP: configured" ||
 - Always ask before installing anything
 - Interactive commands (gh auth) require user input
 - Linear API key is stored in ~/.mcp.json - user must consent to this
-- The Linear MCP server is the ONLY supported method for Linear access
+- The Linear MCP server uses the official remote server (no local dependencies)
 - If something fails, continue with other items and report at end
-- Node.js/npm is required for the Linear MCP server (uses npx)
