@@ -1,7 +1,7 @@
 
-<img width="64" height="64" alt="claude_surf" src="https://github.com/user-attachments/assets/2bd0a8ad-6692-4ff7-b9ac-1f5ce13d2cc0" />
+<img width="128" height="128" alt="claude_surf" src="https://github.com/user-attachments/assets/2bd0a8ad-6692-4ff7-b9ac-1f5ce13d2cc0" />
 
-# 🌊 `claude-surf` 🏄‍♂️
+***
 
 [![GitHub stars](https://img.shields.io/github/stars/justinhe16/claude-surf?style=social)](https://github.com/justinhe16/claude-surf/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/justinhe16/claude-surf?style=social)](https://github.com/justinhe16/claude-surf/network/members)
