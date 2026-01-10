@@ -1,5 +1,5 @@
-// Electron main process placeholder
-// TODO: Implement main process logic
+// Electron main process
+// Phase 1: Basic setup with Vite dev server support
 
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
@@ -14,12 +14,14 @@ function createWindow() {
     },
   });
 
-  // TODO: Load renderer HTML
-  mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
+  // Load from Vite dev server in development, or from built files in production
+  const isDev = !app.isPackaged;
 
-  // Open DevTools in development
-  if (process.env.NODE_ENV === 'development') {
+  if (isDev) {
+    mainWindow.loadURL('http://localhost:5173');
     mainWindow.webContents.openDevTools();
+  } else {
+    mainWindow.loadFile(path.join(__dirname, '../../dist/index.html'));
   }
 }
 
