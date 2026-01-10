@@ -1,40 +1,58 @@
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: '100vh',
-      fontFamily: 'system-ui, -apple-system, sans-serif',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      color: 'white',
-    }}>
-      <h1 style={{ fontSize: '3rem', marginBottom: '1rem' }}>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-purple-600 to-purple-900 p-8">
+      <h1 className="text-5xl font-bold text-white mb-4">
         Claude Surf
       </h1>
-      <p style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>
-        React + TypeScript + Vite is working!
+      <p className="text-xl text-purple-100 mb-8">
+        React + TypeScript + Vite + Tailwind + shadcn/ui
       </p>
-      <button
-        onClick={() => setCount((count) => count + 1)}
-        style={{
-          padding: '0.75rem 2rem',
-          fontSize: '1.1rem',
-          borderRadius: '8px',
-          border: 'none',
-          background: 'white',
-          color: '#764ba2',
-          cursor: 'pointer',
-          fontWeight: 'bold',
-        }}
-      >
-        Count: {count}
-      </button>
+
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Phase 2 Complete!</CardTitle>
+          <CardDescription>
+            Tailwind CSS and shadcn/ui are now configured
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-4">
+            Click the button below to test the shadcn Button component:
+          </p>
+          <div className="flex gap-2 flex-wrap">
+            <Button onClick={() => setCount((count) => count + 1)}>
+              Default: {count}
+            </Button>
+            <Button variant="secondary">Secondary</Button>
+            <Button variant="outline">Outline</Button>
+            <Button variant="destructive">Destructive</Button>
+            <Button variant="ghost">Ghost</Button>
+          </div>
+        </CardContent>
+        <CardFooter className="flex-col items-start gap-2">
+          <p className="text-xs text-muted-foreground">
+            Tailwind utilities: bg-purple-500, text-white, rounded-lg
+          </p>
+          <div className="flex gap-2">
+            <div className="w-8 h-8 bg-red-500 rounded"></div>
+            <div className="w-8 h-8 bg-purple-500 rounded"></div>
+            <div className="w-8 h-8 bg-green-500 rounded"></div>
+          </div>
+        </CardFooter>
+      </Card>
     </div>
   );
 }
