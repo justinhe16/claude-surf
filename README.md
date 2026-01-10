@@ -1,4 +1,5 @@
-<img width="128" height="128" alt="claude_surf" src="https://github.com/user-attachments/assets/5e51ae7e-5a2c-4188-b36b-70e44b94da58" />
+
+<img width="64" height="64" alt="claude_surf" src="https://github.com/user-attachments/assets/2bd0a8ad-6692-4ff7-b9ac-1f5ce13d2cc0" /> 
 
 # 🌊 `claude-surf` 🏄‍♂️
 
