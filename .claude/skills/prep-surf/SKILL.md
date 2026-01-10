@@ -1,10 +1,10 @@
 ---
-name: prep-surf-board
+name: prep-surf
 description: Installs and configures all prerequisites needed for /solo-surf and /robot-surf. Handles gh, Linear MCP server, directories, and more.
 allowed-tools: Bash, Read, Write, Edit
 ---
 
-# Prep Surf Board - Install All Prerequisites
+# Prep Surf - Install All Prerequisites
 
 Automatically installs and configures everything needed for /solo-surf and /robot-surf.
 
@@ -14,7 +14,7 @@ Run checks first, then install/configure missing items. Ask the user before maki
 
 ### Step 1: Check What's Already Installed
 
-Run the same checks as /prereq-surf-check to identify what's missing:
+Run the same checks as /check-surf to identify what's missing:
 
 ```bash
 # Git

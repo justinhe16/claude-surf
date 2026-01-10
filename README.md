@@ -20,8 +20,8 @@ claude
 ```
 
 ```
-/prereq-surf-check    # check what's missing
-/prep-surf-board      # install missing prerequisites
+/check-surf    # check what's missing
+/prep-surf      # install missing prerequisites
 /global-surf          # install agents + skills globally
 ```
 
@@ -29,8 +29,8 @@ claude
 
 | Skill | Description |
 |-------|-------------|
-| `/prereq-surf-check` | Check if gh, Linear CLI, etc. are installed |
-| `/prep-surf-board` | Install missing prerequisites (gh, Linear CLI, etc.) |
+| `/check-surf` | Check if gh, Linear MCP server, etc. are installed |
+| `/prep-surf` | Install missing prerequisites (gh, Linear MCP server, etc.) |
 | `/global-surf` | Copy all agents and skills to `~/.claude/` for global use |
 | `/solo-surf <branch> [terminal]` | Create git worktree + open new terminal with Claude |
 | `/robot-surf <ticket-id>` | Autonomous: Linear ticket → implemented PR with code review |
@@ -55,8 +55,8 @@ Skills are slash commands that teach Claude how to do specific workflows.
 
 | Skill | What it does |
 |-------|--------------|
-| **prereq-surf-check** | Checks for git, gh CLI, Linear access, terminal apps |
-| **prep-surf-board** | Installs gh via Homebrew, Linear CLI via npm, handles auth |
+| **check-surf** | Checks for git, gh CLI, Linear MCP server, terminal apps |
+| **prep-surf** | Installs gh via Homebrew, configures Linear MCP server, handles auth |
 | **global-surf** | Copies agents + skills to ~/.claude/ for use in any project |
 | **solo-surf** | Creates git worktree, copies .env files, opens terminal with Claude |
 | **robot-surf** | Full automation: fetch ticket → implement → PR → CI → code review → done |
@@ -108,8 +108,8 @@ claude-surf/
 │   │   ├── software-engineer.md
 │   │   └── code-reviewer.md
 │   └── skills/
-│       ├── prereq-surf-check/
-│       ├── prep-surf-board/
+│       ├── check-surf/
+│       ├── prep-surf/
 │       ├── global-surf/
 │       ├── solo-surf/
 │       └── robot-surf/

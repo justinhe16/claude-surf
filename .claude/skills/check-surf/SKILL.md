@@ -1,5 +1,5 @@
 ---
-name: prereq-surf-check
+name: check-surf
 description: Checks if all prerequisites are installed for /solo-surf and /robot-surf. Shows what's missing and how to fix it.
 allowed-tools: Bash, Read
 ---
@@ -134,7 +134,7 @@ Display results in a clear table:
      - Create a new key (name it "Claude Surf")
      - Copy the key (starts with lin_api_)
 
-  2. Run /prep-surf-board to automatically configure MCP
+  2. Run /prep-surf to automatically configure MCP
      OR manually create ~/.mcp.json:
 
      {
@@ -153,7 +153,7 @@ Display results in a clear table:
   NEXT STEPS
 ═══════════════════════════════════════════════════════════════
 
-  Run /prep-surf-board to automatically install missing items.
+  Run /prep-surf to automatically install missing items.
 
 ═══════════════════════════════════════════════════════════════
 ```
@@ -163,4 +163,4 @@ Display results in a clear table:
 - Use ✓ for passing checks, ✗ for failing
 - Group all missing items at the end with fix instructions
 - Show which skills are ready vs blocked
-- Always suggest /prep-surf-board at the end if anything is missing
+- Always suggest /prep-surf at the end if anything is missing
