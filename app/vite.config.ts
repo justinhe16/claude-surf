@@ -19,4 +19,5 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src/renderer'),
     },
   },
+  publicDir: 'assets',
 });

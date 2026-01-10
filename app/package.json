@@ -27,7 +27,8 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "tailwind-merge": "^2.2.0",
-    "@radix-ui/react-slot": "^1.0.2"
+    "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-separator": "^1.0.3"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
