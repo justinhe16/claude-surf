@@ -18,14 +18,17 @@ function App() {
         Claude Surf
       </h1>
       <p className="text-xl text-purple-100 mb-8">
-        React + TypeScript + Vite + Tailwind + shadcn/ui
+        React + TS + Vite => Code-First UI
+      </p>
+      <p className="text-sm text-purple-200 mb-8">
+        Ligatures: != === &lt;= &gt;= =&gt; -&gt; &lt;&gt;
       </p>
 
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Phase 2 Complete!</CardTitle>
           <CardDescription>
-            Tailwind CSS and shadcn/ui are now configured
+            Fira Code + Ligatures => Dev-First Typography
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -8,7 +8,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['Fira Code', 'monospace'],
+        mono: ['Fira Code', 'monospace'],
       },
       borderRadius: {
         lg: 'var(--radius)',

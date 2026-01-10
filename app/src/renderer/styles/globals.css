@@ -66,6 +66,10 @@
   body {
     @apply bg-background text-foreground font-sans;
     font-weight: 400;
+    font-variant-ligatures: normal;
+    font-feature-settings: "liga" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   h1 {
     @apply font-bold;
