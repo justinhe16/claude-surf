@@ -5,7 +5,8 @@ import { promisify } from 'util';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as os from 'os';
-import type { WorktreeData, WorktreeStatus, OriginType } from '../shared/types';
+import type { WorktreeData, WorktreeStatus, OriginType, PRStatus } from '../shared/types';
+import { isGhAvailable, getPRForBranch } from './github-service';
 
 const execAsync = promisify(exec);
 
@@ -77,17 +78,52 @@ async function processWorktree(
     return null;
   }
 
-  // Extract branch name from directory name
-  // Pattern: <repo>-<branch> => extract everything after first dash
-  const dashIndex = dirName.indexOf('-');
-  const branchName =
-    dashIndex !== -1 ? dirName.substring(dashIndex + 1) : dirName;
+  // Get the actual branch name from git
+  let branchName = dirName; // fallback
+  try {
+    const { stdout } = await execAsync('git branch --show-current', {
+      cwd: fullPath,
+    });
+    branchName = stdout.trim();
+    console.log(`[git-service] Branch name for ${dirName}: ${branchName}`);
+  } catch (error) {
+    console.warn(`Could not get branch name for ${dirName}, using directory name`);
+  }
 
   // Detect origin type (solo-surf vs robot-surf)
   const originType = await detectOriginType(fullPath);
 
   // Get worktree status
   const status = await getWorktreeStatus(fullPath, branchName);
+
+  // Get PR information if gh CLI is available
+  let prStatus: PRStatus | null = null;
+  try {
+    console.log(`[git-service] Checking gh availability for ${branchName}...`);
+    const ghAvailable = await isGhAvailable();
+    console.log(`[git-service] gh available:`, ghAvailable);
+
+    if (ghAvailable) {
+      // Find the main repo path (worktrees store this in .git file)
+      let repoPath = fullPath;
+      try {
+        const gitFile = await fs.readFile(path.join(fullPath, '.git'), 'utf-8');
+        const match = gitFile.match(/gitdir: (.+)\/\.git\/worktrees\//);
+        if (match) {
+          repoPath = match[1];
+          console.log(`[git-service] Found main repo at: ${repoPath}`);
+        }
+      } catch (error) {
+        console.log(`[git-service] Using worktree path as repo path`);
+      }
+
+      console.log(`[git-service] Fetching PR for ${branchName} from ${repoPath}...`);
+      prStatus = await getPRForBranch(branchName, repoPath);
+      console.log(`[git-service] PR status for ${branchName}:`, prStatus);
+    }
+  } catch (error) {
+    console.error(`[git-service] Could not fetch PR for ${branchName}:`, error);
+  }
 
   // Get last modified time
   const stats = await fs.stat(fullPath);
@@ -98,7 +134,7 @@ async function processWorktree(
     branchName,
     originType,
     status,
-    prUrl: undefined, // Will be populated by github-service in Phase 9
+    prStatus,
     lastModified: stats.mtime,
   };
 }

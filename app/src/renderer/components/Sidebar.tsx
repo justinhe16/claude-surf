@@ -2,15 +2,17 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { ColorLegend } from './ColorLegend';
+import { Github } from 'lucide-react';
 
 interface SidebarProps {
   filterText: string;
   onFilterChange: (text: string) => void;
   scanDirectory: string;
   onScanDirectoryChange: (dir: string) => void;
+  githubConnected: boolean | null;
 }
 
-export function Sidebar({ filterText, onFilterChange, scanDirectory, onScanDirectoryChange }: SidebarProps) {
+export function Sidebar({ filterText, onFilterChange, scanDirectory, onScanDirectoryChange, githubConnected }: SidebarProps) {
   return (
     <div className="w-1/4 min-w-[280px] bg-slate-900 p-6 flex flex-col gap-6 border-r border-slate-700">
       {/* Logo */}
@@ -55,6 +57,23 @@ export function Sidebar({ filterText, onFilterChange, scanDirectory, onScanDirec
           onChange={(e) => onFilterChange(e.target.value)}
           className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
         />
+      </div>
+
+      <Separator className="bg-slate-700" />
+
+      {/* GitHub Status */}
+      <div className="flex items-center gap-2">
+        <Github className="w-4 h-4 text-slate-300" />
+        <div className={`w-2 h-2 rounded-full ${
+          githubConnected === null
+            ? 'bg-gray-500'
+            : githubConnected
+            ? 'bg-green-500'
+            : 'bg-red-500'
+        }`} />
+        <span className="text-sm text-slate-300">
+          {githubConnected === null ? 'Checking...' : githubConnected ? 'Connected' : 'Disconnected'}
+        </span>
       </div>
 
       <Separator className="bg-slate-700" />

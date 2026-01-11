@@ -2,6 +2,7 @@
 
 import { ipcMain } from 'electron';
 import { scanWorktrees, deleteWorktree } from './git-service';
+import { isGhAvailable } from './github-service';
 
 /**
  * Register all IPC handlers
@@ -46,6 +47,19 @@ export function registerIPCHandlers(): void {
     } catch (error) {
       console.error('IPC: Error refreshing worktrees:', error);
       throw error;
+    }
+  });
+
+  // Check if GitHub CLI is available and authenticated
+  ipcMain.handle('github:checkAvailability', async () => {
+    console.log('IPC: github:checkAvailability requested');
+    try {
+      const available = await isGhAvailable();
+      console.log(`IPC: GitHub CLI available: ${available}`);
+      return available;
+    } catch (error) {
+      console.error('IPC: Error checking GitHub availability:', error);
+      return false;
     }
   });
 

@@ -15,6 +15,7 @@ interface WorktreeStore {
   autoRefreshInterval: number; // in milliseconds
   lastRefreshed: Date | null;
   showRefreshIndicator: boolean;
+  githubConnected: boolean | null; // null = unknown, true = connected, false = disconnected
 
   // Computed
   filteredWorktrees: () => WorktreeData[];
@@ -43,6 +44,7 @@ export const useWorktreeStore = create<WorktreeStore>((set, get) => ({
   autoRefreshInterval: 30000, // 30 seconds default
   lastRefreshed: null,
   showRefreshIndicator: false,
+  githubConnected: null, // Unknown initially
 
   // Computed ordered worktrees
   orderedWorktrees: () => {
@@ -91,8 +93,14 @@ export const useWorktreeStore = create<WorktreeStore>((set, get) => ({
     console.log(`[worktree-store] Fetching worktrees from: ${get().scanDirectory}`);
 
     try {
-      const data = await window.electronAPI.worktrees.list(get().scanDirectory);
+      // Check GitHub availability in parallel with fetching worktrees
+      const [data, ghAvailable] = await Promise.all([
+        window.electronAPI.worktrees.list(get().scanDirectory),
+        window.electronAPI.github.checkAvailability(),
+      ]);
+
       console.log(`[worktree-store] Received ${data.length} worktrees`);
+      console.log(`[worktree-store] GitHub available: ${ghAvailable}`);
 
       // Initialize order if empty, preserve existing order for known worktrees
       const currentOrder = get().worktreeOrder;
@@ -107,6 +115,7 @@ export const useWorktreeStore = create<WorktreeStore>((set, get) => ({
         isLoading: false,
         lastRefreshed: new Date(),
         showRefreshIndicator: true,
+        githubConnected: ghAvailable,
       });
     } catch (err) {
       console.error('Failed to fetch worktrees:', err);

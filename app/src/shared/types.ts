@@ -9,7 +9,7 @@ export interface WorktreeData {
   branchName: string; // Git branch name
   originType: OriginType; // How it was created
   status: WorktreeStatus; // Current status
-  prUrl?: string; // GitHub PR URL if exists
+  prStatus?: PRStatus | null; // GitHub PR status if exists
   lastModified: Date; // Last modification time
 }
 
@@ -31,6 +31,9 @@ export interface ElectronAPI {
     list: (directory?: string) => Promise<WorktreeData[]>;
     delete: (id: string, branchName: string, deleteBranch: boolean) => Promise<void>;
     refresh: (directory?: string) => Promise<WorktreeData[]>;
+  };
+  github: {
+    checkAvailability: () => Promise<boolean>;
   };
 }
 

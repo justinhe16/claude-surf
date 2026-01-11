@@ -11,6 +11,9 @@ const electronAPI: ElectronAPI = {
       ipcRenderer.invoke('worktrees:delete', id, branchName, deleteBranch),
     refresh: (directory?: string) => ipcRenderer.invoke('worktrees:refresh', directory),
   },
+  github: {
+    checkAvailability: () => ipcRenderer.invoke('github:checkAvailability'),
+  },
 };
 
 // Expose API to renderer process
