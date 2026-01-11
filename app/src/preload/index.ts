@@ -6,9 +6,10 @@ import type { ElectronAPI } from '../shared/types';
 
 const electronAPI: ElectronAPI = {
   worktrees: {
-    list: () => ipcRenderer.invoke('worktrees:list'),
-    delete: (id: string) => ipcRenderer.invoke('worktrees:delete', id),
-    refresh: () => ipcRenderer.invoke('worktrees:refresh'),
+    list: (directory?: string) => ipcRenderer.invoke('worktrees:list', directory),
+    delete: (id: string, branchName: string, deleteBranch: boolean) =>
+      ipcRenderer.invoke('worktrees:delete', id, branchName, deleteBranch),
+    refresh: (directory?: string) => ipcRenderer.invoke('worktrees:refresh', directory),
   },
 };
 

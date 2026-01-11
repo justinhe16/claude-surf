@@ -10,17 +10,22 @@ import type { WorktreeData, WorktreeStatus, OriginType } from '../shared/types';
 const execAsync = promisify(exec);
 
 /**
- * Scans ~/Projects directory for git worktrees
+ * Scans directory for git worktrees
  * Looks for directories matching pattern: <repo>-<branch>
+ * @param directory - Optional directory path (defaults to ~/Projects)
  */
-export async function scanWorktrees(): Promise<WorktreeData[]> {
-  const projectsDir = path.join(os.homedir(), 'Projects');
+export async function scanWorktrees(directory?: string): Promise<WorktreeData[]> {
+  const projectsDir = directory
+    ? directory.replace('~', os.homedir())
+    : path.join(os.homedir(), 'Projects');
+
+  console.log(`[git-service] Scanning directory: ${projectsDir} (raw input: ${directory || 'undefined'})`);
 
   try {
     // Check if Projects directory exists
     await fs.access(projectsDir);
   } catch (error) {
-    console.log('~/Projects directory not found, returning empty list');
+    console.log(`${projectsDir} directory not found, returning empty list`);
     return [];
   }
 
@@ -159,19 +164,77 @@ async function getWorktreeStatus(
 }
 
 /**
- * Delete a worktree directory
+ * Delete a worktree using git worktree remove
+ * This properly cleans up git references and the main repo's worktree registry
+ * Optionally also deletes the git branch
  * WARNING: This is destructive and cannot be undone
  */
-export async function deleteWorktree(id: string): Promise<void> {
-  const projectsDir = path.join(os.homedir(), 'Projects');
+export async function deleteWorktree(
+  id: string,
+  branchName: string,
+  deleteBranch: boolean,
+  directory?: string
+): Promise<void> {
+  const projectsDir = directory
+    ? directory.replace('~', os.homedir())
+    : path.join(os.homedir(), 'Projects');
   const worktreePath = path.join(projectsDir, id);
 
-  // Safety check: ensure path is within ~/Projects
+  // Safety check: ensure path is within scan directory
   if (!worktreePath.startsWith(projectsDir)) {
     throw new Error('Invalid worktree path - security violation');
   }
 
-  // Remove the directory
-  await fs.rm(worktreePath, { recursive: true, force: true });
-  console.log(`Deleted worktree: ${worktreePath}`);
+  // Step 1: Find the main repo by reading the .git file in the worktree
+  let mainRepoPath = projectsDir;
+  try {
+    const gitFile = await fs.readFile(path.join(worktreePath, '.git'), 'utf-8');
+    // .git file format: "gitdir: /path/to/main/repo/.git/worktrees/name"
+    const match = gitFile.match(/gitdir: (.+)\/\.git\/worktrees\//);
+    if (match) {
+      mainRepoPath = match[1];
+      console.log(`Found main repo at: ${mainRepoPath}`);
+    }
+  } catch (error) {
+    console.log('Could not read .git file, using parent directory as main repo');
+  }
+
+  // Step 2: Delete the worktree first
+  try {
+    // Use git worktree remove --force to handle both clean and dirty worktrees
+    // This properly cleans up .git/worktrees/ in the main repo
+    await execAsync(`git worktree remove --force "${worktreePath}"`, {
+      cwd: mainRepoPath,
+    });
+    console.log(`Deleted worktree using git: ${worktreePath}`);
+  } catch (error) {
+    // Fallback: If git command fails (e.g., not a worktree), just delete the directory
+    console.warn(`git worktree remove failed, falling back to fs.rm: ${error}`);
+    await fs.rm(worktreePath, { recursive: true, force: true });
+    console.log(`Deleted directory: ${worktreePath}`);
+  }
+
+  // Step 3: Prune stale worktree administrative files
+  try {
+    await execAsync('git worktree prune', {
+      cwd: mainRepoPath,
+    });
+    console.log('Pruned stale worktree references');
+  } catch (error) {
+    console.warn('Failed to prune worktrees:', error);
+  }
+
+  // Step 4: Delete the git branch if requested (now that worktree is gone)
+  if (deleteBranch) {
+    try {
+      // Run from main repo, now that the worktree is deleted and pruned
+      await execAsync(`git branch -D "${branchName}"`, {
+        cwd: mainRepoPath,
+      });
+      console.log(`Deleted branch: ${branchName}`);
+    } catch (error) {
+      console.error(`Failed to delete branch ${branchName}:`, error);
+      // Don't throw - worktree is already deleted
+    }
+  }
 }

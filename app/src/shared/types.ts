@@ -28,9 +28,9 @@ export interface PRStatus {
 // IPC API exposed to renderer via preload
 export interface ElectronAPI {
   worktrees: {
-    list: () => Promise<WorktreeData[]>;
-    delete: (id: string) => Promise<void>;
-    refresh: () => Promise<WorktreeData[]>;
+    list: (directory?: string) => Promise<WorktreeData[]>;
+    delete: (id: string, branchName: string, deleteBranch: boolean) => Promise<void>;
+    refresh: (directory?: string) => Promise<WorktreeData[]>;
   };
 }
 

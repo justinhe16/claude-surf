@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 export function ColorLegend() {
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-semibold text-foreground/80">
+      <h3 className="text-sm font-semibold text-slate-300">
         Status Legend
       </h3>
       <div className="space-y-2">

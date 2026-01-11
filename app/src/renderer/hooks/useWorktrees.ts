@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { WorktreeData } from '../../shared/types';
 
-export function useWorktrees() {
+export function useWorktrees(scanDirectory?: string) {
   const [worktrees, setWorktrees] = useState<WorktreeData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -12,8 +12,11 @@ export function useWorktrees() {
     setIsLoading(true);
     setError(null);
 
+    console.log(`[useWorktrees] Fetching worktrees from: ${scanDirectory}`);
+
     try {
-      const data = await window.electronAPI.worktrees.list();
+      const data = await window.electronAPI.worktrees.list(scanDirectory);
+      console.log(`[useWorktrees] Received ${data.length} worktrees`);
       setWorktrees(data);
     } catch (err) {
       console.error('Failed to fetch worktrees:', err);
@@ -38,10 +41,10 @@ export function useWorktrees() {
     await fetchWorktrees();
   };
 
-  // Fetch worktrees on mount
+  // Fetch worktrees on mount and when scanDirectory changes
   useEffect(() => {
     fetchWorktrees();
-  }, []);
+  }, [scanDirectory]);
 
   return {
     worktrees,

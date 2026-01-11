@@ -6,9 +6,11 @@ import { ColorLegend } from './ColorLegend';
 interface SidebarProps {
   filterText: string;
   onFilterChange: (text: string) => void;
+  scanDirectory: string;
+  onScanDirectoryChange: (dir: string) => void;
 }
 
-export function Sidebar({ filterText, onFilterChange }: SidebarProps) {
+export function Sidebar({ filterText, onFilterChange, scanDirectory, onScanDirectoryChange }: SidebarProps) {
   return (
     <div className="w-1/4 min-w-[280px] bg-slate-900 p-6 flex flex-col gap-6 border-r border-slate-700">
       {/* Logo */}
@@ -21,9 +23,22 @@ export function Sidebar({ filterText, onFilterChange }: SidebarProps) {
         <h2 className="text-xl font-bold text-white text-center">
           Claude Surf
         </h2>
-        <p className="text-xs text-slate-400 text-center">
-          {'Worktree Dashboard'}
-        </p>
+      </div>
+
+      <Separator className="bg-slate-700" />
+
+      {/* Scan Directory */}
+      <div className="space-y-2">
+        <label className="text-sm font-semibold text-slate-300">
+          Scan Directory
+        </label>
+        <Input
+          type="text"
+          placeholder="~/Projects"
+          value={scanDirectory}
+          onChange={(e) => onScanDirectoryChange(e.target.value)}
+          className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
+        />
       </div>
 
       <Separator className="bg-slate-700" />
@@ -51,7 +66,7 @@ export function Sidebar({ filterText, onFilterChange }: SidebarProps) {
 
       {/* Guide */}
       <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-foreground/80">
+        <h3 className="text-sm font-semibold text-slate-300">
           Quick Guide
         </h3>
         <div className="space-y-2 text-xs text-muted-foreground">
@@ -66,9 +81,6 @@ export function Sidebar({ filterText, onFilterChange }: SidebarProps) {
               /robot-surf
             </kbd>{' '}
             Auto-implement ticket
-          </p>
-          <p className="pt-2 text-slate-500">
-            Worktrees live in ~/Projects
           </p>
         </div>
       </div>
