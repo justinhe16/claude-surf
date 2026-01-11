@@ -126,7 +126,9 @@ MAIN_BRANCH="master"  # or "main"
 MAIN_REPO_DIR="$(git rev-parse --show-toplevel)"
 REPO_NAME=$(basename "$MAIN_REPO_DIR")
 WORKTREE_BASE_DIR="${HOME}/Projects"
-WORKTREE_DIR="${WORKTREE_BASE_DIR}/${REPO_NAME}-${BRANCH_NAME}"
+# Sanitize branch name for directory (replace slashes with dashes)
+SAFE_BRANCH_NAME="${BRANCH_NAME//\//-}"
+WORKTREE_DIR="${WORKTREE_BASE_DIR}/${REPO_NAME}-${SAFE_BRANCH_NAME}"
 
 # Check if worktree already exists
 if [ -d "$WORKTREE_DIR" ]; then
@@ -338,5 +340,6 @@ Next Steps:
 - This skill runs in the CURRENT terminal, not a new one (unlike /solo-surf)
 - The entire workflow can take 10-30+ minutes depending on complexity
 - Each agent iteration consumes API quota
-- The skill creates the worktree but operates within it
+- The skill creates the worktree but operates within it (slashes in branch names are converted to dashes)
+- Example: branch `ENG-123-feature/auth` → `~/Projects/myrepo-ENG-123-feature-auth`
 - All git operations happen on the feature branch, never on main

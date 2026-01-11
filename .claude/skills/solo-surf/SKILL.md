@@ -45,7 +45,9 @@ REPO_NAME=$(basename "$MAIN_REPO_DIR")
 WORKTREE_BASE_DIR="${HOME}/Projects"
 BRANCH_NAME="<user-provided-branch>"
 TERMINAL_APP="<user-provided-or-Hyper>"
-WORKTREE_DIR="${WORKTREE_BASE_DIR}/${REPO_NAME}-${BRANCH_NAME}"
+# Sanitize branch name for directory (replace slashes with dashes)
+SAFE_BRANCH_NAME="${BRANCH_NAME//\//-}"
+WORKTREE_DIR="${WORKTREE_BASE_DIR}/${REPO_NAME}-${SAFE_BRANCH_NAME}"
 ```
 
 ### Step 2: Check if Worktree Exists
@@ -145,6 +147,7 @@ Tell the user:
 ## Notes
 
 - If the main branch is `main` instead of `master`, adjust the `MAIN_BRANCH` variable
-- The worktree is created at `~/Projects/<repo>-<branch>`
+- The worktree is created at `~/Projects/<repo>-<branch>` (slashes in branch names are converted to dashes)
+- Example: branch `feature/auth` → `~/Projects/myrepo-feature-auth`
 - The new Claude session starts fresh with no context from the current session
 - To clean up worktrees later, use `git worktree remove <path>` or `git worktree prune`
