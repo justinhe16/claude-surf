@@ -72,27 +72,33 @@
     -moz-osx-font-smoothing: grayscale;
   }
   h1 {
-    @apply font-bold;
+    @apply font-bold text-white;
     font-weight: 700;
   }
   h2 {
-    @apply font-semibold;
+    @apply font-semibold text-white;
     font-weight: 600;
   }
   h3 {
-    @apply font-semibold;
+    @apply font-semibold text-slate-200;
     font-weight: 600;
   }
   h4 {
-    @apply font-medium;
+    @apply font-medium text-slate-300;
     font-weight: 500;
   }
   h5, h6 {
-    @apply font-medium;
+    @apply font-medium text-slate-300;
     font-weight: 500;
   }
   strong, b {
     @apply font-semibold;
     font-weight: 600;
+  }
+  code {
+    @apply bg-slate-800 text-white px-2 py-0.5 rounded;
+  }
+  kbd {
+    @apply bg-slate-800 text-white px-1.5 py-0.5 rounded border border-slate-700;
   }
 }
