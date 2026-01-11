@@ -145,12 +145,26 @@ fi
 
 # Copy config files
 # (same as /solo-surf: .env*, .envrc, .python-version, .node-version, .claude/*, .mcp.json)
+
+# Write metadata file
+cat > "$WORKTREE_DIR/.claude-surf-meta.json" <<EOF
+{
+  "origin": "robot-surf",
+  "createdAt": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "ticketId": "<ticket-id>",
+  "ticketTitle": "<ticket-title>",
+  "branchName": "$BRANCH_NAME",
+  "repoName": "$REPO_NAME",
+  "mainRepo": "$MAIN_REPO_DIR"
+}
+EOF
 ```
 
 Report:
 ```
 Created worktree at: $WORKTREE_DIR
 Branch: $BRANCH_NAME
+Metadata written: .claude-surf-meta.json
 ```
 
 ### Step 4: Change to Worktree Directory

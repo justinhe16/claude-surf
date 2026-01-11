@@ -101,7 +101,23 @@ fi
 [ -f "$MAIN_REPO_DIR/.mcp.json" ] && cp "$MAIN_REPO_DIR/.mcp.json" "$WORKTREE_DIR/"
 ```
 
-### Step 5: Open Terminal with Claude
+### Step 5: Write Metadata File
+
+Create `.claude-surf-meta.json` to track worktree origin:
+
+```bash
+cat > "$WORKTREE_DIR/.claude-surf-meta.json" <<EOF
+{
+  "origin": "solo-surf",
+  "createdAt": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "branchName": "$BRANCH_NAME",
+  "repoName": "$REPO_NAME",
+  "mainRepo": "$MAIN_REPO_DIR"
+}
+EOF
+```
+
+### Step 6: Open Terminal with Claude
 
 Based on terminal preference:
 
@@ -133,7 +149,7 @@ end tell
 "
 ```
 
-### Step 6: Report Success
+### Step 7: Report Success
 
 Tell the user:
 - Worktree created at: `$WORKTREE_DIR`
