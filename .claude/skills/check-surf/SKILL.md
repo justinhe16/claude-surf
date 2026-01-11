@@ -140,6 +140,7 @@ Display results in a clear table:
      {
        "mcpServers": {
          "linear": {
+           "type": "sse",
            "url": "https://mcp.linear.app/sse",
            "env": {
              "LINEAR_API_KEY": "lin_api_xxxxx"

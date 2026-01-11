@@ -126,6 +126,7 @@ Create it with:
 {
   "mcpServers": {
     "linear": {
+      "type": "sse",
       "url": "https://mcp.linear.app/sse",
       "env": {
         "LINEAR_API_KEY": "<user-provided-key>"

@@ -87,3 +87,5 @@ Tell the user what was installed:
 - To uninstall: `rm -rf ~/.claude/agents/* ~/.claude/skills/*`
 - To update: Re-run `/global-surf` after pulling latest changes
 - The `/global-surf` skill itself is NOT copied (only needed in this repo)
+- After installation, run `/check-surf` to verify all prerequisites
+- For `/robot-surf`, you'll need to configure Linear MCP in `~/.mcp.json` with `"type": "sse"` - run `/prep-surf` to set this up automatically
