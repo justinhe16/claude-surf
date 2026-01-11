@@ -175,7 +175,22 @@ cd "$WORKTREE_DIR"
 
 All subsequent operations happen in the worktree.
 
-### Step 5: Spawn Software Engineer Agent
+### Step 5: Write Live Status File
+
+Write `.claude-surf-status.json` to indicate Claude is active:
+
+```bash
+cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
+{
+  "status": "active",
+  "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "pid": $$,
+  "ticketId": "<ticket-id>"
+}
+EOF
+```
+
+### Step 6: Spawn Software Engineer Agent
 
 Use the Task tool to spawn the software-engineer agent with full context:
 
@@ -210,7 +225,7 @@ Wait for the agent to complete and return:
 **If software-engineer fails or gets stuck:**
 Report the error and stop execution. Don't proceed to code review if implementation failed.
 
-### Step 6: Verify PR and CI Status
+### Step 7: Verify PR and CI Status
 
 After software-engineer completes:
 
@@ -239,7 +254,7 @@ Failed checks: <list of failed checks>
 Please review the failures manually and re-run /robot-surf or fix manually.
 ```
 
-### Step 7: Spawn Code Reviewer Agent
+### Step 8: Spawn Code Reviewer Agent
 
 Once CI is green, spawn the code-reviewer agent:
 
@@ -267,7 +282,7 @@ Wait for the agent to complete and return:
 - Summary of feedback
 - List of issues (if any)
 
-### Step 8: Iteration Loop
+### Step 9: Iteration Loop
 
 **If code-reviewer returns REQUEST_CHANGES:**
 
@@ -305,7 +320,7 @@ Outstanding issues:
 Please review manually and address remaining concerns.
 ```
 
-### Step 9: Success - PR Ready for Human Eyes
+### Step 10: Success - PR Ready for Human Eyes
 
 When code-reviewer returns APPROVED:
 

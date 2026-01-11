@@ -123,12 +123,30 @@ Based on terminal preference:
 
 **For Hyper:**
 ```bash
+# Write status file before opening
+cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
+{
+  "status": "active",
+  "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "pid": $$
+}
+EOF
+
 open -a Hyper "$WORKTREE_DIR"
 echo "Opened Hyper at $WORKTREE_DIR - run 'claude' to start"
 ```
 
 **For iTerm:**
 ```bash
+# Write status file before opening
+cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
+{
+  "status": "active",
+  "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "pid": $$
+}
+EOF
+
 osascript -e "
 tell application \"iTerm\"
     create window with default profile
@@ -141,6 +159,15 @@ end tell
 
 **For Terminal:**
 ```bash
+# Write status file before opening
+cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
+{
+  "status": "active",
+  "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "pid": $$
+}
+EOF
+
 osascript -e "
 tell application \"Terminal\"
     do script \"cd '$WORKTREE_DIR' && claude\"

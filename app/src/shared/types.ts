@@ -2,6 +2,7 @@
 
 export type WorktreeStatus = 'clean' | 'dirty' | 'merged' | 'pr-out';
 export type OriginType = 'solo-surf' | 'robot-surf';
+export type LiveStatus = 'active' | 'idle' | 'unknown';
 
 export interface WorktreeData {
   id: string; // Unique identifier (directory name)
@@ -11,6 +12,8 @@ export interface WorktreeData {
   status: WorktreeStatus; // Current status
   prStatus?: PRStatus | null; // GitHub PR status if exists
   lastModified: Date; // Last modification time
+  liveStatus?: LiveStatus; // Whether Claude Code is active
+  lastActive?: Date; // Last time Claude was active
 }
 
 export interface PRStatus {

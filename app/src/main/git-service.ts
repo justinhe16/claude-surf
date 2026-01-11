@@ -5,7 +5,7 @@ import { promisify } from 'util';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as os from 'os';
-import type { WorktreeData, WorktreeStatus, OriginType, PRStatus } from '../shared/types';
+import type { WorktreeData, WorktreeStatus, OriginType, PRStatus, LiveStatus } from '../shared/types';
 import { isGhAvailable, getPRForBranch } from './github-service';
 
 const execAsync = promisify(exec);
@@ -96,6 +96,9 @@ async function processWorktree(
   // Get worktree status
   const status = await getWorktreeStatus(fullPath, branchName);
 
+  // Detect live Claude Code status
+  const liveStatusData = await detectLiveStatus(fullPath);
+
   // Get PR information if gh CLI is available
   let prStatus: PRStatus | null = null;
   try {
@@ -136,6 +139,8 @@ async function processWorktree(
     status,
     prStatus,
     lastModified: stats.mtime,
+    liveStatus: liveStatusData.status,
+    lastActive: liveStatusData.lastActive,
   };
 }
 
@@ -153,6 +158,39 @@ async function detectOriginType(worktreePath: string): Promise<OriginType> {
   } catch {
     // No metadata file, assume solo-surf
     return 'solo-surf';
+  }
+}
+
+/**
+ * Detect live Claude Code status in worktree
+ * Checks for .claude-surf-status.json file
+ */
+async function detectLiveStatus(worktreePath: string): Promise<{
+  status: LiveStatus;
+  lastActive?: Date;
+}> {
+  const statusPath = path.join(worktreePath, '.claude-surf-status.json');
+
+  try {
+    const statusContent = await fs.readFile(statusPath, 'utf-8');
+    const statusData = JSON.parse(statusContent);
+
+    // Check if status file is recent (within last 5 minutes = active)
+    const lastActive = new Date(statusData.lastActive || statusData.timestamp);
+    const now = new Date();
+    const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
+
+    const isActive = lastActive > fiveMinutesAgo && statusData.status === 'active';
+
+    return {
+      status: isActive ? 'active' : 'idle',
+      lastActive,
+    };
+  } catch {
+    // No status file
+    return {
+      status: 'unknown',
+    };
   }
 }
 

@@ -291,6 +291,18 @@ function App() {
                     >
                       {wt.status}
                     </Badge>
+                    {wt.liveStatus === 'active' && (
+                      <Badge
+                        variant="outline"
+                        className="bg-emerald-500/20 text-emerald-700 border-emerald-500/60 flex items-center gap-1.5"
+                      >
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        Live
+                      </Badge>
+                    )}
                   </div>
                   <div className="flex justify-end mt-auto">
                     <Button
