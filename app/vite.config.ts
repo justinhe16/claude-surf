@@ -9,6 +9,30 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    // Production optimizations
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true, // Remove console.logs in production
+        drop_debugger: true,
+      },
+    },
+    // Code splitting for better caching
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Vendor chunk for React and core libraries
+          vendor: ['react', 'react-dom'],
+          // UI library chunk
+          ui: ['framer-motion', 'lucide-react'],
+        },
+      },
+    },
+    // Asset optimization
+    assetsInlineLimit: 4096, // Inline assets smaller than 4kb
+    chunkSizeWarningLimit: 1000, // Warn on chunks larger than 1MB
+    // Source maps for debugging production issues
+    sourcemap: false, // Disable for smaller bundle size
   },
   server: {
     port: 5173,
