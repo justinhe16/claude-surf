@@ -57,12 +57,18 @@ async function processWorktree(
   dirName: string,
   fullPath: string
 ): Promise<WorktreeData | null> {
-  // Check if it's actually a git repository
-  const gitDir = path.join(fullPath, '.git');
+  // Check if .git exists and is a FILE (worktree), not a directory (regular clone)
+  const gitPath = path.join(fullPath, '.git');
   try {
-    await fs.access(gitDir);
+    const gitStats = await fs.stat(gitPath);
+
+    // Worktrees have .git as a file, regular clones have .git as a directory
+    if (!gitStats.isFile()) {
+      console.log(`${dirName} is a regular git clone (not a worktree), skipping`);
+      return null;
+    }
   } catch {
-    console.log(`${dirName} is not a git repository, skipping`);
+    console.log(`${dirName} has no .git file, skipping`);
     return null;
   }
 
