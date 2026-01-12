@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { ColorLegend } from './ColorLegend';
-import { Github } from 'lucide-react';
+import { Github, ExternalLink } from 'lucide-react';
 
 interface SidebarProps {
   filterText: string;
@@ -103,6 +103,20 @@ export function Sidebar({ filterText, onFilterChange, scanDirectory, onScanDirec
           </p>
         </div>
       </div>
+
+      <Separator className="bg-slate-700" />
+
+      {/* GitHub Repo Link */}
+      <a
+        href="https://github.com/justinhe16/claude-surf"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-2 text-sm text-slate-300 hover:text-white transition-colors"
+      >
+        <Github className="w-4 h-4" />
+        <span>GitHub Repository</span>
+        <ExternalLink className="w-3 h-3 ml-auto" />
+      </a>
 
       {/* Spacer to push version to bottom */}
       <div className="flex-grow" />
