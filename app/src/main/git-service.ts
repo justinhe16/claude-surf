@@ -316,6 +316,17 @@ export async function deleteWorktree(
         cwd: mainRepoPath,
       });
       console.log(`Deleted branch: ${branchName}`);
+
+      // Push the deletion to remote
+      try {
+        await execAsync(`git push origin --delete "${branchName}"`, {
+          cwd: mainRepoPath,
+        });
+        console.log(`Pushed branch deletion to remote: ${branchName}`);
+      } catch (pushError) {
+        console.warn(`Failed to push branch deletion to remote (branch may not exist on remote):`, pushError);
+        // Don't throw - local branch is already deleted
+      }
     } catch (error) {
       console.error(`Failed to delete branch ${branchName}:`, error);
       // Don't throw - worktree is already deleted
