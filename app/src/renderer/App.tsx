@@ -218,6 +218,41 @@ function App() {
                     {wt.path}
                   </p>
 
+                  <div className="flex gap-2 items-center flex-wrap mb-3">
+                    <Badge
+                      variant="outline"
+                      className="bg-blue-500/20 text-blue-700 border-blue-500/60"
+                    >
+                      {wt.originType}
+                    </Badge>
+                    <Badge
+                      variant="outline"
+                      className={
+                        wt.status === 'dirty'
+                          ? 'bg-red-500/20 text-red-700 border-red-500/60'
+                          : wt.status === 'merged'
+                          ? 'bg-purple-500/20 text-purple-700 border-purple-500/60'
+                          : wt.status === 'pr-out'
+                          ? 'bg-green-500/20 text-green-700 border-green-500/60'
+                          : 'bg-gray-500/20 text-gray-700 border-gray-500/60'
+                      }
+                    >
+                      {wt.status}
+                    </Badge>
+                    {wt.liveStatus === 'active' && (
+                      <Badge
+                        variant="outline"
+                        className="bg-emerald-500/20 text-emerald-700 border-emerald-500/60 flex items-center gap-1.5"
+                      >
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        Live
+                      </Badge>
+                    )}
+                  </div>
+
                   {/* PR Status */}
                   <div className="mb-3 space-y-2">
                     {wt.prStatus ? (
@@ -276,40 +311,6 @@ function App() {
                     )}
                   </div>
 
-                  <div className="flex gap-2 items-center flex-wrap mb-3">
-                    <Badge
-                      variant="outline"
-                      className="bg-blue-500/20 text-blue-700 border-blue-500/60"
-                    >
-                      {wt.originType}
-                    </Badge>
-                    <Badge
-                      variant="outline"
-                      className={
-                        wt.status === 'dirty'
-                          ? 'bg-red-500/20 text-red-700 border-red-500/60'
-                          : wt.status === 'merged'
-                          ? 'bg-purple-500/20 text-purple-700 border-purple-500/60'
-                          : wt.status === 'pr-out'
-                          ? 'bg-green-500/20 text-green-700 border-green-500/60'
-                          : 'bg-gray-500/20 text-gray-700 border-gray-500/60'
-                      }
-                    >
-                      {wt.status}
-                    </Badge>
-                    {wt.liveStatus === 'active' && (
-                      <Badge
-                        variant="outline"
-                        className="bg-emerald-500/20 text-emerald-700 border-emerald-500/60 flex items-center gap-1.5"
-                      >
-                        <span className="relative flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                        </span>
-                        Live
-                      </Badge>
-                    )}
-                  </div>
                   <div className="flex justify-end mt-auto">
                     <Button
                       variant="destructive"
