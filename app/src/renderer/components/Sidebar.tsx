@@ -91,6 +91,18 @@ export function Sidebar({ filterText, onFilterChange, scanDirectory, onScanDirec
         <div className="space-y-2 text-xs text-muted-foreground">
           <p>
             <kbd className="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700">
+              /check-surf
+            </kbd>{' '}
+            Check prerequisites
+          </p>
+          <p>
+            <kbd className="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700">
+              /prep-surf
+            </kbd>{' '}
+            Install prerequisites
+          </p>
+          <p>
+            <kbd className="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700">
               /solo-surf
             </kbd>{' '}
             Create manual worktree
@@ -99,7 +111,13 @@ export function Sidebar({ filterText, onFilterChange, scanDirectory, onScanDirec
             <kbd className="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700">
               /robot-surf
             </kbd>{' '}
-            Auto-implement ticket
+            Plan + implement ticket
+          </p>
+          <p>
+            <kbd className="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700">
+              /robot-surf-prompt
+            </kbd>{' '}
+            Plan + implement from prompt
           </p>
         </div>
       </div>

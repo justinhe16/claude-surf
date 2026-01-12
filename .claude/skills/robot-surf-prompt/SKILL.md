@@ -1,16 +1,16 @@
 ---
-name: robot-surf
-description: Fully autonomous ticket implementation. Takes a Linear ticket, creates a worktree, implements the feature, handles CI/CD, runs code review, and delivers a PR ready for human eyes. Usage: /robot-surf <linear-ticket-id>
+name: robot-surf-prompt
+description: Fully autonomous task implementation from a prompt. Takes a freeform task description, creates a worktree, plans if needed, implements the feature, handles CI/CD, runs code review, and delivers a PR. Usage: /robot-surf-prompt "your task description"
 allowed-tools: Bash, Read, Edit, Write, Glob, Grep, Task, WebFetch
 ---
 
-# Robot Surf - Autonomous Ticket Implementation
+# Robot Surf Prompt - Autonomous Task Implementation
 
-Takes a Linear ticket and autonomously:
+Takes a freeform task prompt and autonomously:
 1. Creates a git worktree for the feature
 2. Assesses task complexity using staff-engineer-planner agent
 3. Creates detailed implementation plan (if complex)
-4. Implements the ticket using the software-engineer agent
+4. Implements the task using the software-engineer agent
 5. Creates a PR and monitors CI/CD
 6. Runs code-reviewer agent for feedback
 7. Iterates until the PR is ready for human review
@@ -18,107 +18,73 @@ Takes a Linear ticket and autonomously:
 ## Usage
 
 ```
-/robot-surf <linear-ticket-id>
+/robot-surf-prompt "your task description here"
 ```
 
 **Examples:**
 ```
-/robot-surf ENG-123
-/robot-surf PROJ-456
+/robot-surf-prompt "Add user authentication with JWT tokens"
+/robot-surf-prompt "Refactor the API client to use axios instead of fetch"
+/robot-surf-prompt "Fix the bug where modal doesn't close on escape key"
+/robot-surf-prompt "Implement dark mode toggle in settings"
 ```
 
 ## Instructions
 
 ### Step 0: Validate Input
 
-**If no ticket ID is provided:**
+**If no prompt is provided:**
 ```
-Error: Linear ticket ID is required.
+Error: Task prompt is required.
 
-Usage: /robot-surf <linear-ticket-id>
+Usage: /robot-surf-prompt "your task description"
 
 Examples:
-  /robot-surf ENG-123
-  /robot-surf PROJ-456
+  /robot-surf-prompt "Add user authentication"
+  /robot-surf-prompt "Fix memory leak in event listeners"
+  /robot-surf-prompt "Refactor database layer to use Prisma"
 
-The ticket ID is the identifier shown in Linear (e.g., ENG-123).
+Provide a clear, detailed description of what you want to implement.
 ```
 Stop execution and return this message.
 
-**If ticket ID format looks invalid** (should be LETTERS-NUMBERS like ABC-123):
+**If prompt is too vague (less than 10 characters):**
 ```
-Error: Invalid ticket format. Expected format: TEAM-123
+Error: Task prompt is too vague.
 
-Usage: /robot-surf <linear-ticket-id>
+Please provide a detailed description of what you want to implement.
 
-Examples:
-  /robot-surf ENG-123
-  /robot-surf PROJ-456
-```
-Stop execution and return this message.
+Good examples:
+  "Add user authentication with JWT tokens and refresh logic"
+  "Refactor the API client to use axios and add retry logic"
 
-### Step 1: Fetch Linear Ticket
+Bad examples:
+  "fix bug"
+  "update code"
 
-Try to fetch the ticket details. There are multiple ways to do this:
-
-**Option A: Linear MCP Server (if configured)**
-If the user has a Linear MCP server configured, use it to fetch the ticket.
-
-**Option B: Linear CLI (if installed)**
-```bash
-linear issue view <ticket-id>
-```
-
-**Option C: Linear API (if LINEARAPI_KEY is set)**
-```bash
-curl -s -X POST https://api.linear.app/graphql \
-  -H "Content-Type: application/json" \
-  -H "Authorization: $LINEAR_API_KEY" \
-  -d '{"query": "{ issue(id: \"<ticket-id>\") { id title description state { name } } }"}'
-```
-
-**If ticket fetch fails:**
-```
-Error: Could not fetch Linear ticket "<ticket-id>".
-
-Possible reasons:
-1. Ticket ID doesn't exist
-2. You don't have access to this ticket
-3. Linear MCP server not configured
-4. Network error
-
-To configure Linear access, run /prep-surf or manually configure ~/.mcp.json:
-{
-  "mcpServers": {
-    "linear": {
-      "url": "https://mcp.linear.app/sse",
-      "env": {
-        "LINEAR_API_KEY": "your-linear-api-key"
-      }
-    }
-  }
-}
-
-Get your API key from: https://linear.app/settings/api
-
-Please verify the ticket ID and try again.
+Your prompt should clearly describe the goal and any important requirements.
 ```
 Stop execution and return this message.
 
-### Step 2: Extract Ticket Details
+### Step 1: Generate Task Metadata
 
-From the fetched ticket, extract:
-- **Title**: The ticket title (used for branch name and PR title)
-- **Description**: Full ticket description (used as implementation spec)
-- **Ticket ID**: The identifier (e.g., ENG-123)
+From the task prompt, generate:
+- **Task ID**: Generate a unique ID using timestamp: `TASK-<YYYYMMDD>-<HHMMSS>` (e.g., `TASK-20260112-143022`)
+- **Title**: Create a concise title from the prompt (first 50 chars, remove special chars)
+- **Description**: Use the full prompt as the task description
+- **Branch Name**: Create a branch name: `<task-id>-<slugified-title>`
 
-Create a branch name from the ticket:
+Example:
 ```
-BRANCH_NAME="<ticket-id>-<slugified-title>"
-# Example: ENG-123 "Add user authentication" → "ENG-123-add-user-authentication"
+Prompt: "Add user authentication with JWT tokens"
+
+Generated:
+- Task ID: TASK-20260112-143022
+- Title: Add user authentication with JWT tokens
+- Branch Name: TASK-20260112-143022-add-user-authentication-jwt
 ```
 
-### Step 3: Create Git Worktree
+### Step 2: Create Git Worktree
 
 Execute the same logic as /solo-surf:
 
@@ -128,6 +94,7 @@ MAIN_BRANCH="master"  # or "main"
 MAIN_REPO_DIR="$(git rev-parse --show-toplevel)"
 REPO_NAME=$(basename "$MAIN_REPO_DIR")
 WORKTREE_BASE_DIR="${HOME}/Projects"
+
 # Sanitize branch name for directory (replace slashes with dashes)
 SAFE_BRANCH_NAME="${BRANCH_NAME//\//-}"
 WORKTREE_DIR="${WORKTREE_BASE_DIR}/${REPO_NAME}-${SAFE_BRANCH_NAME}"
@@ -153,10 +120,10 @@ fi
 # Write metadata file
 cat > "$WORKTREE_DIR/.claude-surf-meta.json" <<EOF
 {
-  "origin": "robot-surf",
+  "origin": "robot-surf-prompt",
   "createdAt": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "ticketId": "<ticket-id>",
-  "ticketTitle": "<ticket-title>",
+  "taskId": "<task-id>",
+  "taskPrompt": "<original-prompt>",
   "branchName": "$BRANCH_NAME",
   "repoName": "$REPO_NAME",
   "mainRepo": "$MAIN_REPO_DIR"
@@ -168,10 +135,11 @@ Report:
 ```
 Created worktree at: $WORKTREE_DIR
 Branch: $BRANCH_NAME
+Task: <task-id>
 Metadata written: .claude-surf-meta.json
 ```
 
-### Step 4: Change to Worktree Directory
+### Step 3: Change to Worktree Directory
 
 ```bash
 cd "$WORKTREE_DIR"
@@ -179,7 +147,7 @@ cd "$WORKTREE_DIR"
 
 All subsequent operations happen in the worktree.
 
-### Step 5: Write Live Status File
+### Step 4: Write Live Status File
 
 Write `.claude-surf-status.json` to indicate Claude is active:
 
@@ -189,13 +157,13 @@ cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
   "status": "active",
   "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "pid": $$,
-  "ticketId": "<ticket-id>",
+  "taskId": "<task-id>",
   "statusMessage": "Starting..."
 }
 EOF
 ```
 
-### Step 6: Assess Task Complexity
+### Step 5: Assess Task Complexity
 
 **Update status:**
 ```bash
@@ -204,7 +172,7 @@ cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
   "status": "active",
   "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "pid": $$,
-  "ticketId": "<ticket-id>",
+  "taskId": "<task-id>",
   "statusMessage": "Planning..."
 }
 EOF
@@ -215,12 +183,10 @@ Spawn the staff-engineer-planner agent to assess if the task needs detailed plan
 ```
 Spawn staff-engineer-planner agent with:
 
-Task: Assess complexity for Linear ticket <ticket-id>
+Task: Assess complexity for task <task-id>
 
-Ticket Title: <title>
-
-Ticket Description:
-<full description from Linear>
+Task Prompt:
+<full original prompt>
 
 Your job:
 1. Explore the codebase to understand what this task requires
@@ -236,7 +202,7 @@ Wait for the agent to complete and return one of:
 
 Store the assessment result for use in next steps.
 
-### Step 7: Create Implementation Plan (If Complex)
+### Step 6: Create Implementation Plan (If Complex)
 
 **This step only runs if staff-engineer-planner returned ASSESSMENT: COMPLEX**
 
@@ -245,12 +211,10 @@ If the task is COMPLEX, use Claude Code's built-in Plan agent to create a detail
 ```
 Spawn Plan agent with:
 
-Task: Create implementation plan for Linear ticket <ticket-id>
+Task: Create implementation plan for task <task-id>
 
-Ticket Title: <title>
-
-Ticket Description:
-<full description from Linear>
+Task Prompt:
+<full original prompt>
 
 Staff Engineer Assessment:
 <paste the full assessment from staff-engineer-planner>
@@ -273,9 +237,9 @@ Wait for the Plan agent to complete and return:
 
 Store the plan for passing to software-engineer in the next step.
 
-**If the task is SIMPLE, skip this step entirely** and proceed directly to Step 8.
+**If the task is SIMPLE, skip this step entirely** and proceed directly to Step 7.
 
-### Step 8: Spawn Software Engineer Agent
+### Step 7: Spawn Software Engineer Agent
 
 **Before spawning, update status:**
 ```bash
@@ -284,7 +248,7 @@ cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
   "status": "active",
   "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "pid": $$,
-  "ticketId": "<ticket-id>",
+  "taskId": "<task-id>",
   "statusMessage": "Implementing..."
 }
 EOF
@@ -297,22 +261,20 @@ Use the Task tool to spawn the software-engineer agent with full context.
 ```
 Spawn software-engineer agent with:
 
-Task: Implement Linear ticket <ticket-id>
+Task: <task-id>
 
-Ticket Title: <title>
-
-Ticket Description:
-<full description from Linear>
+Task Prompt:
+<full original prompt>
 
 Implementation Plan:
 <paste the full plan from the Plan agent>
 
 Requirements:
 1. Follow the implementation plan provided
-2. Implement the feature as described
+2. Implement the feature as described in the prompt
 3. Run tests until they pass
-4. Create a PR with title: "<ticket-id>: <title>"
-5. Include the Linear ticket link in the PR description
+4. Create a PR with title: "<task-id>: <title>"
+5. Include the task prompt in the PR description
 6. Monitor CI/CD - if checks fail, fix and push
 7. Report back when PR is green and ready for review
 
@@ -325,18 +287,16 @@ Worktree: <worktree-dir>
 ```
 Spawn software-engineer agent with:
 
-Task: Implement Linear ticket <ticket-id>
+Task: <task-id>
 
-Ticket Title: <title>
-
-Ticket Description:
-<full description from Linear>
+Task Prompt:
+<full original prompt>
 
 Requirements:
-1. Implement the feature as described
+1. Implement the feature as described in the prompt
 2. Run tests until they pass
-3. Create a PR with title: "<ticket-id>: <title>"
-4. Include the Linear ticket link in the PR description
+3. Create a PR with title: "<task-id>: <title>"
+4. Include the task prompt in the PR description
 5. Monitor CI/CD - if checks fail, fix and push
 6. Report back when PR is green and ready for review
 
@@ -353,7 +313,7 @@ Wait for the agent to complete and return:
 **If software-engineer fails or gets stuck:**
 Report the error and stop execution. Don't proceed to code review if implementation failed.
 
-### Step 9: Verify PR and CI Status
+### Step 8: Verify PR and CI Status
 
 **Update status:**
 ```bash
@@ -362,7 +322,7 @@ cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
   "status": "active",
   "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "pid": $$,
-  "ticketId": "<ticket-id>",
+  "taskId": "<task-id>",
   "statusMessage": "Waiting for CI..."
 }
 EOF
@@ -392,10 +352,10 @@ Error: CI checks are failing and software-engineer could not resolve them.
 PR: <pr-url>
 Failed checks: <list of failed checks>
 
-Please review the failures manually and re-run /robot-surf or fix manually.
+Please review the failures manually and re-run /robot-surf-prompt or fix manually.
 ```
 
-### Step 10: Spawn Code Reviewer Agent
+### Step 9: Spawn Code Reviewer Agent
 
 **Update status:**
 ```bash
@@ -404,7 +364,7 @@ cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
   "status": "active",
   "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "pid": $$,
-  "ticketId": "<ticket-id>",
+  "taskId": "<task-id>",
   "statusMessage": "Code review..."
 }
 EOF
@@ -415,16 +375,16 @@ Once CI is green, spawn the code-reviewer agent:
 ```
 Spawn code-reviewer agent with:
 
-Task: Review PR #<pr-number> for Linear ticket <ticket-id>
+Task: Review PR #<pr-number> for task <task-id>
 
 PR URL: <pr-url>
 
-Ticket Context:
-<ticket title and description>
+Task Prompt:
+<original prompt>
 
 Instructions:
 1. Review the PR for quality, security, and correctness
-2. Check that it properly addresses the ticket requirements
+2. Check that it properly addresses the task requirements
 3. Post your review using gh pr review
 4. If you find issues, use REQUEST_CHANGES
 5. If it looks good, APPROVE the PR
@@ -436,7 +396,7 @@ Wait for the agent to complete and return:
 - Summary of feedback
 - List of issues (if any)
 
-### Step 11: Iteration Loop
+### Step 10: Iteration Loop
 
 **If code-reviewer returns REQUEST_CHANGES:**
 
@@ -447,7 +407,7 @@ cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
   "status": "active",
   "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "pid": $$,
-  "ticketId": "<ticket-id>",
+  "taskId": "<task-id>",
   "statusMessage": "Addressing feedback..."
 }
 EOF
@@ -479,6 +439,7 @@ If after 3 iterations code-reviewer still requests changes:
 Warning: Maximum review iterations (3) reached.
 
 PR: <pr-url>
+Task: <task-id>
 Status: Code reviewer still has concerns after 3 rounds.
 
 Outstanding issues:
@@ -487,7 +448,7 @@ Outstanding issues:
 Please review manually and address remaining concerns.
 ```
 
-### Step 12: Success - PR Ready for Human Eyes
+### Step 11: Success - PR Ready for Human Eyes
 
 **Update final status:**
 ```bash
@@ -496,7 +457,7 @@ cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
   "status": "active",
   "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "pid": $$,
-  "ticketId": "<ticket-id>",
+  "taskId": "<task-id>",
   "statusMessage": "Ready for merge"
 }
 EOF
@@ -509,7 +470,8 @@ When code-reviewer returns APPROVED:
   PR READY FOR HUMAN REVIEW
 =================================================
 
-Ticket: <ticket-id> - <ticket-title>
+Task: <task-id>
+Prompt: <original prompt>
 PR: <pr-url>
 Branch: <branch-name>
 
@@ -533,9 +495,8 @@ Next Steps:
 
 | Error | Message |
 |-------|---------|
-| No ticket ID | "Error: Linear ticket ID is required..." |
-| Invalid ticket format | "Error: Invalid ticket format..." |
-| Ticket not fetchable | "Error: Could not fetch Linear ticket..." |
+| No prompt | "Error: Task prompt is required..." |
+| Prompt too vague | "Error: Task prompt is too vague..." |
 | Not in a git repo | "Error: Not in a git repository..." |
 | Worktree creation fails | "Error: Could not create worktree..." |
 | Software-engineer fails | "Error: Implementation failed..." |
@@ -549,6 +510,21 @@ Next Steps:
 - Each agent iteration consumes API quota
 - Planning step adds 2-5 minutes but can save significant rework time for complex tasks
 - Simple tasks skip detailed planning and go straight to implementation
+- Task IDs are timestamp-based to ensure uniqueness
 - The skill creates the worktree but operates within it (slashes in branch names are converted to dashes)
-- Example: branch `ENG-123-feature/auth` → `~/Projects/myrepo-ENG-123-feature-auth`
+- Example: branch `TASK-20260112-143022-add-user-auth` → `~/Projects/myrepo-TASK-20260112-143022-add-user-auth`
 - All git operations happen on the feature branch, never on main
+- Unlike /robot-surf, this doesn't require Linear integration
+
+## Comparison to /robot-surf
+
+| Feature | /robot-surf | /robot-surf-prompt |
+|---------|-------------|-------------------|
+| Input | Linear ticket ID | Freeform task prompt |
+| Ticket fetching | Fetches from Linear API/MCP | Generates metadata from prompt |
+| Task ID | From Linear (e.g., ENG-123) | Timestamp-based (e.g., TASK-20260112-143022) |
+| Planning | Yes (via staff-engineer-planner) | Yes (via staff-engineer-planner) |
+| Implementation | software-engineer agent | software-engineer agent |
+| Code Review | code-reviewer agent | code-reviewer agent |
+| Dependencies | Requires Linear access | No external dependencies |
+| Use Case | For teams using Linear | For ad-hoc tasks, personal projects |

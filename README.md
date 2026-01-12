@@ -39,7 +39,8 @@ Visual dashboard for managing worktrees - [download latest release](https://gith
 | `/prep-surf` | Install missing prerequisites (gh, Linear MCP server, etc.) |
 | `/global-surf` | Copy all agents and skills to `~/.claude/` for global use |
 | `/solo-surf <branch> [terminal]` | Create git worktree + open new terminal with Claude |
-| `/robot-surf <ticket-id>` | Autonomous: Linear ticket → implemented PR with code review |
+| `/robot-surf <ticket-id>` | Autonomous: Linear ticket → planned implementation → PR with code review |
+| `/robot-surf-prompt "task"` | Autonomous: Freeform task → planned implementation → PR with code review |
 
 ---
 
@@ -52,6 +53,7 @@ Agents are specialized AI assistants that Claude can delegate work to. When you 
 | Agent | What it does |
 |-------|--------------|
 | **orchestrator** | Coordinates multi-step tasks, spawns other agents, manages iteration loops |
+| **staff-engineer-planner** | Assesses task complexity, decides if planning is needed, surfaces architectural risks |
 | **software-engineer** | Implements features, runs tests, creates PRs, monitors CI, fixes failures |
 | **code-reviewer** | Reviews PRs for bugs, security issues, code quality; approves or requests changes |
 
@@ -65,24 +67,29 @@ Skills are slash commands that teach Claude how to do specific workflows.
 | **prep-surf** | Installs gh via Homebrew, configures Linear MCP server, handles auth |
 | **global-surf** | Copies agents + skills to ~/.claude/ for use in any project |
 | **solo-surf** | Creates git worktree, copies .env files, opens terminal with Claude |
-| **robot-surf** | Full automation: fetch ticket → implement → PR → CI → code review → done |
+| **robot-surf** | Full automation: fetch Linear ticket → assess complexity → plan (if needed) → implement → PR → CI → code review → done |
+| **robot-surf-prompt** | Full automation from freeform prompt: assess complexity → plan (if needed) → implement → PR → CI → code review → done |
 
 ### The Robot-Surf Loop
 
 ```
-/robot-surf ENG-123
+/robot-surf ENG-123  or  /robot-surf-prompt "task description"
        │
        ▼
-┌─────────────────────────────────────┐
-│  1. Fetch Linear ticket             │
-│  2. Create git worktree + branch    │
-│  3. software-engineer implements    │
-│  4. Create PR, wait for CI green    │
-│  5. code-reviewer reviews           │
-│  6. If issues → back to step 3      │
-│  7. Repeat until approved (max 3x)  │
-│  8. Report: "PR ready for review"   │
-└─────────────────────────────────────┘
+┌──────────────────────────────────────────────┐
+│  1. Fetch Linear ticket (or use prompt)      │
+│  2. Create git worktree + branch             │
+│  3. staff-engineer-planner assesses          │
+│     ├─ SIMPLE → skip to step 5               │
+│     └─ COMPLEX → continue to step 4          │
+│  4. Plan agent creates implementation plan   │
+│  5. software-engineer implements (with plan) │
+│  6. Create PR, wait for CI green             │
+│  7. code-reviewer reviews                    │
+│  8. If issues → back to step 5               │
+│  9. Repeat until approved (max 3x)           │
+│ 10. Report: "PR ready for review"            │
+└──────────────────────────────────────────────┘
 ```
 
 ---
@@ -111,6 +118,7 @@ claude-surf/
 ├── .claude/
 │   ├── agents/           # AI agents for delegated work
 │   │   ├── orchestrator.md
+│   │   ├── staff-engineer-planner.md
 │   │   ├── software-engineer.md
 │   │   └── code-reviewer.md
 │   └── skills/           # Slash commands
@@ -118,7 +126,8 @@ claude-surf/
 │       ├── prep-surf/
 │       ├── global-surf/
 │       ├── solo-surf/
-│       └── robot-surf/
+│       ├── robot-surf/
+│       └── robot-surf-prompt/
 ├── app/                  # Electron desktop app (WIP)
 │   ├── src/
 │   │   ├── main/         # Main process

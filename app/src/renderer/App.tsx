@@ -155,14 +155,21 @@ function App() {
                 <p className="text-sm text-muted-foreground mb-4">
                   Create your first worktree to get started
                 </p>
-                <div className="flex gap-2 justify-center">
-                  <code className="px-3 py-1.5 bg-slate-800 rounded text-sm">
-                    /solo-surf feature-name
-                  </code>
-                  <span className="text-muted-foreground">or</span>
-                  <code className="px-3 py-1.5 bg-slate-800 rounded text-sm">
-                    /robot-surf LIN-123
-                  </code>
+                <div className="flex flex-col gap-2 items-center">
+                  <div className="flex gap-2">
+                    <code className="px-3 py-1.5 bg-slate-800 rounded text-sm">
+                      /solo-surf feature-name
+                    </code>
+                  </div>
+                  <div className="flex gap-2">
+                    <code className="px-3 py-1.5 bg-slate-800 rounded text-sm">
+                      /robot-surf LIN-123
+                    </code>
+                    <span className="text-muted-foreground">or</span>
+                    <code className="px-3 py-1.5 bg-slate-800 rounded text-sm">
+                      /robot-surf-prompt "task"
+                    </code>
+                  </div>
                 </div>
               </div>
             </CardContent>
