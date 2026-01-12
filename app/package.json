@@ -2,13 +2,15 @@
   "name": "claude-surf-app",
   "version": "0.1.0",
   "description": "Visual dashboard for managing Claude Surf worktrees",
-  "main": "src/main/index.js",
+  "main": "dist-electron/main/index.js",
   "scripts": {
-    "dev": "electron .",
-    "build": "electron-builder",
-    "build:mac": "electron-builder --mac",
-    "build:win": "electron-builder --win",
-    "build:linux": "electron-builder --linux"
+    "dev": "concurrently \"vite\" \"npm run electron:dev\"",
+    "electron:dev": "tsc -p tsconfig.node.json && electron .",
+    "build": "tsc -p tsconfig.node.json && vite build && electron-builder",
+    "build:mac": "tsc -p tsconfig.node.json && vite build && electron-builder --mac",
+    "build:win": "tsc -p tsconfig.node.json && vite build && electron-builder --win",
+    "build:linux": "tsc -p tsconfig.node.json && vite build && electron-builder --linux",
+    "vite": "vite"
   },
   "keywords": [
     "claude",
@@ -19,15 +21,43 @@
   ],
   "author": "justinhe16",
   "license": "MIT",
+  "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-separator": "^1.0.3",
+    "@radix-ui/react-slot": "^1.0.2",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "framer-motion": "^12.25.0",
+    "lucide-react": "^0.562.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tailwind-merge": "^2.2.0",
+    "zustand": "^5.0.9"
+  },
   "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "autoprefixer": "^10.4.0",
+    "concurrently": "^8.2.0",
     "electron": "^28.0.0",
-    "electron-builder": "^24.9.0"
+    "electron-builder": "^24.9.0",
+    "icon-gen": "^5.0.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.3.0",
+    "vite": "^5.0.0"
   },
   "build": {
     "appId": "com.claudesurf.app",
     "productName": "Claude Surf",
     "files": [
-      "src/**/*",
+      "dist-electron/**/*",
+      "dist/**/*",
       "package.json"
     ],
     "directories": {
