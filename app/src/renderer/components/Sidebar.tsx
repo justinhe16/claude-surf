@@ -114,7 +114,7 @@ export function Sidebar({ filterText, onFilterChange, scanDirectory, onScanDirec
         className="flex items-center gap-2 text-sm text-slate-300 hover:text-white transition-colors"
       >
         <Github className="w-4 h-4" />
-        <span>GitHub Repository</span>
+        <span>Claude Surf GitHub Repo</span>
         <ExternalLink className="w-3 h-3 ml-auto" />
       </a>
 
