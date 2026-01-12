@@ -42,9 +42,10 @@ export async function getPRForBranch(
     console.log(`[github-service] Fetching PR for branch: ${branchName} in ${repoPath}`);
 
     // Use gh pr list to find PRs for this branch
+    // --state all ensures we fetch OPEN, CLOSED, and MERGED PRs
     // --json gives us structured data we can parse
     const { stdout } = await execAsync(
-      `gh pr list --head "${branchName}" --json number,title,url,state,isDraft,statusCheckRollup --limit 1`,
+      `gh pr list --head "${branchName}" --state all --json number,title,url,state,isDraft,statusCheckRollup --limit 1`,
       { cwd: repoPath }
     );
 
