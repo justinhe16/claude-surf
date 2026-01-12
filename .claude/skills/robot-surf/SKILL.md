@@ -186,7 +186,7 @@ cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
   "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "pid": $$,
   "ticketId": "<ticket-id>",
-  "statusMessage": "Starting..."
+  "statusMessage": "🚀 Starting..."
 }
 EOF
 ```
@@ -201,7 +201,7 @@ cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
   "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "pid": $$,
   "ticketId": "<ticket-id>",
-  "statusMessage": "Implementing..."
+  "statusMessage": "🔨 Implementing..."
 }
 EOF
 ```
@@ -249,7 +249,7 @@ cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
   "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "pid": $$,
   "ticketId": "<ticket-id>",
-  "statusMessage": "Waiting for CI..."
+  "statusMessage": "⏳ Waiting for CI..."
 }
 EOF
 ```
@@ -291,7 +291,7 @@ cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
   "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "pid": $$,
   "ticketId": "<ticket-id>",
-  "statusMessage": "Code review..."
+  "statusMessage": "👀 Code review..."
 }
 EOF
 ```
@@ -334,7 +334,7 @@ cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
   "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "pid": $$,
   "ticketId": "<ticket-id>",
-  "statusMessage": "Addressing feedback..."
+  "statusMessage": "🔧 Addressing feedback..."
 }
 EOF
 ```
@@ -383,7 +383,7 @@ cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
   "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "pid": $$,
   "ticketId": "<ticket-id>",
-  "statusMessage": "Ready for merge"
+  "statusMessage": "✅ Ready for merge"
 }
 EOF
 ```
