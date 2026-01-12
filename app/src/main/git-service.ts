@@ -93,13 +93,7 @@ async function processWorktree(
   // Detect origin type (solo-surf vs robot-surf)
   const originType = await detectOriginType(fullPath);
 
-  // Get worktree status
-  const status = await getWorktreeStatus(fullPath, branchName);
-
-  // Detect live Claude Code status
-  const liveStatusData = await detectLiveStatus(fullPath);
-
-  // Get PR information if gh CLI is available
+  // Get PR information if gh CLI is available (fetch first to determine status)
   let prStatus: PRStatus | null = null;
   try {
     console.log(`[git-service] Checking gh availability for ${branchName}...`);
@@ -127,6 +121,12 @@ async function processWorktree(
   } catch (error) {
     console.error(`[git-service] Could not fetch PR for ${branchName}:`, error);
   }
+
+  // Get worktree status (pass PR status for better detection)
+  const status = await getWorktreeStatus(fullPath, branchName, prStatus);
+
+  // Detect live Claude Code status
+  const liveStatusData = await detectLiveStatus(fullPath);
 
   // Get last modified time
   const stats = await fs.stat(fullPath);
@@ -203,7 +203,8 @@ async function detectLiveStatus(worktreePath: string): Promise<{
  */
 async function getWorktreeStatus(
   worktreePath: string,
-  branchName: string
+  branchName: string,
+  prStatus: PRStatus | null
 ): Promise<WorktreeStatus> {
   // 1. Check for dirty working tree (uncommitted changes)
   try {
@@ -218,7 +219,12 @@ async function getWorktreeStatus(
     console.error('Error checking git status:', error);
   }
 
-  // 2. Check if branch is merged to main/master
+  // 2. Check if PR is merged
+  if (prStatus && prStatus.state === 'MERGED') {
+    return 'merged';
+  }
+
+  // 3. Check if branch is merged to main/master
   try {
     const { stdout: merged } = await execAsync(
       'git branch -r --merged origin/main || git branch -r --merged origin/master',
@@ -232,11 +238,12 @@ async function getWorktreeStatus(
     // Ignore errors - branch might not exist on remote yet
   }
 
-  // 3. Check for PR (will be implemented in Phase 9 with gh CLI)
-  // For now, we'll assume no PR exists
-  // TODO: Integrate github-service.getPRForBranch()
+  // 4. Check if PR exists (open PR)
+  if (prStatus && prStatus.state === 'OPEN') {
+    return 'pr-out';
+  }
 
-  // 4. Default: clean
+  // 5. Default: clean
   return 'clean';
 }
 
