@@ -141,6 +141,7 @@ async function processWorktree(
     lastModified: stats.mtime,
     liveStatus: liveStatusData.status,
     lastActive: liveStatusData.lastActive,
+    statusMessage: liveStatusData.statusMessage,
   };
 }
 
@@ -168,6 +169,7 @@ async function detectOriginType(worktreePath: string): Promise<OriginType> {
 async function detectLiveStatus(worktreePath: string): Promise<{
   status: LiveStatus;
   lastActive?: Date;
+  statusMessage?: string;
 }> {
   const statusPath = path.join(worktreePath, '.claude-surf-status.json');
 
@@ -185,6 +187,7 @@ async function detectLiveStatus(worktreePath: string): Promise<{
     return {
       status: isActive ? 'active' : 'idle',
       lastActive,
+      statusMessage: statusData.statusMessage || statusData.message,
     };
   } catch {
     // No status file

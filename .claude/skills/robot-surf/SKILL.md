@@ -185,12 +185,26 @@ cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
   "status": "active",
   "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "pid": $$,
-  "ticketId": "<ticket-id>"
+  "ticketId": "<ticket-id>",
+  "statusMessage": "Starting..."
 }
 EOF
 ```
 
 ### Step 6: Spawn Software Engineer Agent
+
+**Before spawning, update status:**
+```bash
+cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
+{
+  "status": "active",
+  "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "pid": $$,
+  "ticketId": "<ticket-id>",
+  "statusMessage": "Implementing..."
+}
+EOF
+```
 
 Use the Task tool to spawn the software-engineer agent with full context:
 
@@ -227,6 +241,19 @@ Report the error and stop execution. Don't proceed to code review if implementat
 
 ### Step 7: Verify PR and CI Status
 
+**Update status:**
+```bash
+cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
+{
+  "status": "active",
+  "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "pid": $$,
+  "ticketId": "<ticket-id>",
+  "statusMessage": "Waiting for CI..."
+}
+EOF
+```
+
 After software-engineer completes:
 
 ```bash
@@ -255,6 +282,19 @@ Please review the failures manually and re-run /robot-surf or fix manually.
 ```
 
 ### Step 8: Spawn Code Reviewer Agent
+
+**Update status:**
+```bash
+cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
+{
+  "status": "active",
+  "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "pid": $$,
+  "ticketId": "<ticket-id>",
+  "statusMessage": "Code review..."
+}
+EOF
+```
 
 Once CI is green, spawn the code-reviewer agent:
 
@@ -285,6 +325,19 @@ Wait for the agent to complete and return:
 ### Step 9: Iteration Loop
 
 **If code-reviewer returns REQUEST_CHANGES:**
+
+**Update status:**
+```bash
+cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
+{
+  "status": "active",
+  "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "pid": $$,
+  "ticketId": "<ticket-id>",
+  "statusMessage": "Addressing feedback..."
+}
+EOF
+```
 
 Spawn software-engineer again with the feedback:
 
@@ -321,6 +374,19 @@ Please review manually and address remaining concerns.
 ```
 
 ### Step 10: Success - PR Ready for Human Eyes
+
+**Update final status:**
+```bash
+cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
+{
+  "status": "active",
+  "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "pid": $$,
+  "ticketId": "<ticket-id>",
+  "statusMessage": "Ready for merge"
+}
+EOF
+```
 
 When code-reviewer returns APPROVED:
 

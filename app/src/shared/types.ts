@@ -14,6 +14,7 @@ export interface WorktreeData {
   lastModified: Date; // Last modification time
   liveStatus?: LiveStatus; // Whether Claude Code is active
   lastActive?: Date; // Last time Claude was active
+  statusMessage?: string; // What Claude is currently doing (e.g., "Implementing...", "Code review...")
 }
 
 export interface PRStatus {

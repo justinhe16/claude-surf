@@ -128,7 +128,8 @@ cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
 {
   "status": "active",
   "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "pid": $$
+  "pid": $$,
+  "statusMessage": "Coding..."
 }
 EOF
 
@@ -143,7 +144,8 @@ cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
 {
   "status": "active",
   "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "pid": $$
+  "pid": $$,
+  "statusMessage": "Coding..."
 }
 EOF
 
@@ -164,7 +166,8 @@ cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
 {
   "status": "active",
   "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "pid": $$
+  "pid": $$,
+  "statusMessage": "Coding..."
 }
 EOF
 
