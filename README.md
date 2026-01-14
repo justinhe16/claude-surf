@@ -140,3 +140,7 @@ claude-surf/
 ## License
 
 MIT
+
+## Author
+
+Justin He
