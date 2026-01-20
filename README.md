@@ -137,6 +137,47 @@ claude-surf/
 └── README.md
 ```
 
+## Deployment and Releases
+
+### Creating a Release
+
+1. **Test locally**
+   ```bash
+   cd app
+   npm run dev     # Test the app works
+   npm run build   # (Optional) Test the build works locally
+   ```
+
+2. **Commit your changes**
+   ```bash
+   git add .
+   git commit -m "Your changes"
+   git push
+   ```
+
+3. **Create and push a tag**
+   ```bash
+   git tag v1.0.0
+   git push origin v1.0.0
+   ```
+
+4. **GitHub Actions builds automatically**
+   - Builds for macOS, Windows, and Linux
+   - Creates GitHub Release
+   - Uploads installers (.dmg, .exe, .AppImage, .zip)
+   - Monitor progress at: https://github.com/justinhe16/claude-surf/actions
+
+5. **(Optional) Write release notes**
+   - Go to https://github.com/justinhe16/claude-surf/releases
+   - Edit the release and add notes about what's new
+
+### Build Outputs
+
+The GitHub Actions workflow produces:
+- **macOS**: `.dmg` installer and `.zip`
+- **Windows**: `.exe` installer and `.zip`
+- **Linux**: `.AppImage` and `.deb` package
+
 ## License
 
 MIT
