@@ -1,6 +1,7 @@
 {
   "name": "claude-surf-app",
   "version": "1.0.0",
+  "type": "module",
   "description": "Visual dashboard for managing Claude Surf worktrees",
   "main": "dist-electron/main/index.js",
   "scripts": {
@@ -19,7 +20,11 @@
     "dashboard",
     "electron"
   ],
-  "author": "justinhe16",
+  "author": {
+    "name": "Justin He",
+    "email": "justinhe16@gmail.com"
+  },
+  "homepage": "https://github.com/justinhe16/claude-surf",
   "license": "MIT",
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -49,6 +54,7 @@
     "icon-gen": "^5.0.0",
     "postcss": "^8.4.0",
     "tailwindcss": "^3.4.0",
+    "terser": "^5.46.0",
     "typescript": "^5.3.0",
     "vite": "^5.0.0"
   },
@@ -84,7 +90,8 @@
         "deb"
       ],
       "category": "Development",
-      "icon": "assets/icon.png"
+      "icon": "assets/icon.png",
+      "maintainer": "Justin He <justinhe16@gmail.com>"
     }
   }
 }
