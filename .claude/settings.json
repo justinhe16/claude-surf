@@ -4,12 +4,18 @@
     "allow": [
       "Bash(git:*)",
       "Bash(gh:*)",
-      "Bash(npm test:*)",
-      "Bash(npm run:*)",
+      "Bash(npm:*)",
       "Bash(pytest:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
       "Edit",
       "Write",
-      "Read"
+      "Read",
+      "Grep",
+      "Glob",
+      "Task"
     ]
   }
 }
