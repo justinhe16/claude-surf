@@ -27,9 +27,51 @@ claude
 /global-surf     # install agents + skills globally
 ```
 
-**Desktop App (Coming Soon):**
+**Desktop App:**
 
 Visual dashboard for managing worktrees - [download latest release](https://github.com/justinhe16/claude-surf/releases)
+
+## Installation
+
+### Desktop App
+
+1. **Download** the latest release for your platform:
+   - **macOS**: Download `Claude-Surf-x.x.x-arm64-mac.zip` (Apple Silicon) or `-x64-mac.zip` (Intel)
+   - **Windows**: Download `Claude-Surf-Setup-x.x.x.exe`
+   - **Linux**: Download `Claude-Surf-x.x.x.AppImage` or `.deb`
+
+2. **Install**:
+
+   **macOS**:
+   ```bash
+   # Extract the zip file (double-click or use unzip)
+
+   # IMPORTANT: Remove quarantine attribute (required for unsigned apps)
+   xattr -cr ~/Downloads/"Claude Surf.app"
+
+   # Move to Applications folder
+   mv ~/Downloads/"Claude Surf.app" /Applications/
+
+   # Open the app
+   open /Applications/"Claude Surf.app"
+   ```
+
+   **Windows**:
+   - Run the `.exe` installer
+   - Follow the installation wizard
+
+   **Linux (AppImage)**:
+   ```bash
+   chmod +x Claude-Surf-*.AppImage
+   ./Claude-Surf-*.AppImage
+   ```
+
+   **Linux (Debian/Ubuntu)**:
+   ```bash
+   sudo dpkg -i claude-surf-app_*.deb
+   ```
+
+**Note**: The macOS app is currently unsigned. macOS will block it unless you remove the quarantine attribute with the `xattr` command shown above.
 
 ## Usage
 
