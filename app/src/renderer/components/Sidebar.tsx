@@ -142,7 +142,7 @@ export function Sidebar({ filterText, onFilterChange, scanDirectory, onScanDirec
 
       {/* Version */}
       <div className="text-xs text-slate-500 text-center">
-        v0.1.0
+        v1.0.5
       </div>
     </div>
   );
