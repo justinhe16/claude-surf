@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { ColorLegend } from './ColorLegend';
 import { Github, ExternalLink } from 'lucide-react';
+import claudeSurfLogo from '/claude_surf.png';
 
 interface SidebarProps {
   filterText: string;
@@ -18,7 +19,7 @@ export function Sidebar({ filterText, onFilterChange, scanDirectory, onScanDirec
       {/* Logo */}
       <div className="flex flex-col items-center gap-4">
         <img
-          src="/assets/claude_surf.png"
+          src={claudeSurfLogo}
           alt="Claude Surf"
           className="w-32 h-32 rounded-lg"
         />
