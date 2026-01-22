@@ -32,6 +32,7 @@ Copy each skill directory (except global-surf itself, since it's only needed in 
 ```bash
 cp -r .claude/skills/solo-surf ~/.claude/skills/
 cp -r .claude/skills/robot-surf ~/.claude/skills/
+cp -r .claude/skills/robot-surf-prompt ~/.claude/skills/
 cp -r .claude/skills/check-surf ~/.claude/skills/
 cp -r .claude/skills/prep-surf ~/.claude/skills/
 ```
@@ -67,6 +68,7 @@ Tell the user what was installed:
 **Skills installed to `~/.claude/skills/`:**
 - solo-surf
 - robot-surf
+- robot-surf-prompt
 - check-surf
 - prep-surf
 

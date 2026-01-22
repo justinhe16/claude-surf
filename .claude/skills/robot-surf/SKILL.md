@@ -487,9 +487,9 @@ Outstanding issues:
 Please review manually and address remaining concerns.
 ```
 
-### Step 12: Success - PR Ready for Human Eyes
+### Step 12: Announce PR Ready and Start Human Review Monitoring
 
-**Update final status:**
+**Update status:**
 ```bash
 cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
 {
@@ -497,7 +497,7 @@ cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
   "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "pid": $$,
   "ticketId": "<ticket-id>",
-  "statusMessage": "Ready for merge"
+  "statusMessage": "Awaiting human review"
 }
 EOF
 ```
@@ -521,10 +521,148 @@ Review Notes:
 
 CI Status: All checks passing
 
-Next Steps:
-1. Click the PR link above to review
-2. Merge when satisfied
-3. Clean up worktree: git worktree remove <worktree-dir>
+Now monitoring for human review feedback...
+Will automatically address any review comments.
+
+=================================================
+```
+
+### Step 13: Poll for Human Reviews
+
+After announcing the PR is ready, continuously poll for human review feedback.
+
+**Polling logic:**
+```bash
+PR_NUMBER=$(gh pr view --json number -q '.number')
+ITERATION_COUNT=0
+MAX_ITERATIONS=10
+START_TIME=$(date +%s)
+MAX_DURATION=7200  # 2 hours in seconds
+
+while true; do
+  # Check elapsed time
+  CURRENT_TIME=$(date +%s)
+  ELAPSED=$((CURRENT_TIME - START_TIME))
+
+  if [ $ELAPSED -gt $MAX_DURATION ]; then
+    echo "Timeout: Stopped monitoring after 2 hours"
+    break
+  fi
+
+  # Check PR state
+  PR_STATE=$(gh pr view $PR_NUMBER --json state -q '.state')
+
+  if [ "$PR_STATE" = "MERGED" ]; then
+    echo "PR has been merged! 🎉"
+    break
+  elif [ "$PR_STATE" = "CLOSED" ]; then
+    echo "PR has been closed."
+    break
+  fi
+
+  # Check for human reviews
+  REVIEWS=$(gh pr view $PR_NUMBER --json reviews -q '.reviews[] | select(.author.login != "github-actions[bot]") | {author: .author.login, state: .state, body: .body}')
+
+  # Check if there are any REQUEST_CHANGES reviews
+  NEEDS_CHANGES=$(echo "$REVIEWS" | grep -c "REQUEST_CHANGES" || true)
+
+  if [ "$NEEDS_CHANGES" -gt 0 ]; then
+    # Extract review comments
+    REVIEW_COMMENTS=$(gh pr view $PR_NUMBER --json reviews -q '.reviews[] | select(.state == "CHANGES_REQUESTED") | "**@\(.author.login):**\n\(.body)\n"')
+
+    # Also get inline comments
+    INLINE_COMMENTS=$(gh pr view $PR_NUMBER --json reviews -q '.reviews[].comments[]? | "**\(.path):\(.line)**\n\(.body)\n"')
+
+    ITERATION_COUNT=$((ITERATION_COUNT + 1))
+
+    if [ $ITERATION_COUNT -gt $MAX_ITERATIONS ]; then
+      echo "Maximum iterations ($MAX_ITERATIONS) reached. Stopping automated fixes."
+      break
+    fi
+
+    # Break out of bash and spawn software-engineer
+    break
+  fi
+
+  # Sleep before next poll
+  sleep 60
+done
+```
+
+**When human requests changes:**
+
+Update status:
+```bash
+cat > "$WORKTREE_DIR/.claude-surf-status.json" <<EOF
+{
+  "status": "active",
+  "lastActive": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "pid": $$,
+  "ticketId": "<ticket-id>",
+  "statusMessage": "Addressing human feedback (round $ITERATION_COUNT)"
+}
+EOF
+```
+
+Spawn software-engineer to address the feedback:
+
+```
+Spawn software-engineer agent with:
+
+Task: Address human review feedback for PR #<pr-number> (Round <iteration-count>)
+
+Human Review Feedback:
+<paste review comments and inline comments>
+
+Instructions:
+1. Carefully read all review comments
+2. Address each piece of feedback
+3. Push fixes to the PR
+4. Wait for CI to pass
+5. Report back when ready
+
+Do NOT approve or merge the PR yourself - wait for human approval.
+```
+
+After software-engineer completes, return to polling (go back to start of Step 13).
+
+**When PR is merged or closed:**
+```
+=================================================
+  PR COMPLETED
+=================================================
+
+Ticket: <ticket-id>
+PR: <pr-url>
+Status: <MERGED or CLOSED>
+
+Total human feedback rounds: <iteration-count>
+
+Worktree cleanup:
+git worktree remove <worktree-dir>
+
+=================================================
+```
+
+**When timeout or max iterations reached:**
+```
+=================================================
+  MONITORING STOPPED
+=================================================
+
+Ticket: <ticket-id>
+PR: <pr-url>
+Status: Still open, awaiting review
+
+Reason: <Timeout after 2 hours / Maximum iterations reached>
+
+The PR is still open. You can:
+1. Continue reviewing and providing feedback manually
+2. Re-run /robot-surf <ticket-id> to resume automated fixes
+3. Merge the PR if satisfied
+
+Worktree location: <worktree-dir>
+To clean up: git worktree remove <worktree-dir>
 
 =================================================
 ```
@@ -546,9 +684,13 @@ Next Steps:
 
 - This skill runs in the CURRENT terminal, not a new one (unlike /solo-surf)
 - The entire workflow can take 10-30+ minutes depending on complexity
+- After PR creation, the agent will poll for human reviews for up to 2 hours or 10 feedback rounds
 - Each agent iteration consumes API quota
 - Planning step adds 2-5 minutes but can save significant rework time for complex tasks
 - Simple tasks skip detailed planning and go straight to implementation
 - The skill creates the worktree but operates within it (slashes in branch names are converted to dashes)
 - Example: branch `ENG-123-feature/auth` → `~/Projects/myrepo-ENG-123-feature-auth`
 - All git operations happen on the feature branch, never on main
+- Polling checks every 60 seconds for new human review comments
+- Agent automatically addresses REQUEST_CHANGES reviews by spawning software-engineer
+- Monitoring stops when PR is merged, closed, timeout (2h), or max iterations (10) reached
