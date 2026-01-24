@@ -17,6 +17,10 @@ gh pr view <number>
 # See the diff
 gh pr diff <number>
 
+# Check existing reviews and comments
+gh pr view <number> --json reviews
+gh pr view <number> --json comments
+
 # Check CI status
 gh pr checks <number>
 ```

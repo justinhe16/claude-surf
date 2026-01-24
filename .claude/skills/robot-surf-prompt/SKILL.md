@@ -532,8 +532,11 @@ while true; do
     # Extract review comments
     REVIEW_COMMENTS=$(gh pr view $PR_NUMBER --json reviews -q '.reviews[] | select(.state == "CHANGES_REQUESTED") | "**@\(.author.login):**\n\(.body)\n"')
 
-    # Also get inline comments
+    # Also get inline comments from reviews
     INLINE_COMMENTS=$(gh pr view $PR_NUMBER --json reviews -q '.reviews[].comments[]? | "**\(.path):\(.line)**\n\(.body)\n"')
+
+    # Also get general PR comments
+    PR_COMMENTS=$(gh pr view $PR_NUMBER --json comments -q '.comments[] | select(.author.login != "github-actions[bot]") | "**@\(.author.login):**\n\(.body)\n"')
 
     ITERATION_COUNT=$((ITERATION_COUNT + 1))
 
@@ -574,7 +577,7 @@ Spawn software-engineer agent with:
 Task: Address human review feedback for PR #<pr-number> (Round <iteration-count>)
 
 Human Review Feedback:
-<paste review comments and inline comments>
+<paste review comments, inline comments, and PR comments>
 
 Instructions:
 1. Carefully read all review comments
