@@ -125,304 +125,487 @@ If NOT in a git repo, skip exploration and note that codebase context is unavail
 
 ### Step 2: Phase 1 — Scope Questions
 
-Display the opening banner and first set of questions:
+Tell the user briefly: "Planning **`<description>`** — I'll ask a few questions in phases to write the most complete ticket possible."
+
+Then use the **AskUserQuestion tool** (do NOT print plain text questions). Make two sequential calls:
+
+**First AskUserQuestion call** — 3 questions:
 
 ```
-═══════════════════════════════════════════════════════════════
-  LINEAR SURF — PLANNING MODE
-═══════════════════════════════════════════════════════════════
+questions:
+  1. header: "Area"
+     question: "Which area(s) does this work touch?"
+     multiSelect: true
+     options:
+       - label: "[Web]"
+         description: "Browser UI — pages, components, routing, forms"
+       - label: "[Backend]"
+         description: "API, database, business logic, background jobs"
+       - label: "[iOS]"
+         description: "Native iOS screens, views, Swift/SwiftUI"
+       - label: "[Admin]"
+         description: "API keys, deployment, infrastructure, config"
 
-  Request: "<initial description>"
+  2. header: "Change type"
+     question: "What kind of change is this?"
+     multiSelect: false
+     options:
+       - label: "Net-new feature"
+         description: "Doesn't exist at all — building from scratch"
+       - label: "Extension of existing"
+         description: "Builds on what's already there"
+       - label: "Refactor / improvement"
+         description: "Same behavior, better internals or UX"
+       - label: "Bug fix"
+         description: "Something is broken and needs fixing"
 
-  I'll ask questions in phases to build the most comprehensive
-  ticket(s) possible. The goal: a ticket so complete that an
-  agent can implement it with zero ambiguity.
-
-  Take your time — detail here saves time during implementation.
-
-═══════════════════════════════════════════════════════════════
-  PHASE 1 OF 3: SCOPE & CONTEXT
-═══════════════════════════════════════════════════════════════
+  3. header: "Priority"
+     question: "What's the priority for this work?"
+     multiSelect: false
+     options:
+       - label: "Urgent"
+         description: "Blocking production or an active release"
+       - label: "High"
+         description: "Needed soon — next sprint"
+       - label: "Normal"
+         description: "Standard backlog priority"
+       - label: "Low"
+         description: "Nice to have, no time pressure"
 ```
 
-Ask ALL of the following questions at once (display numbered list, user answers all before continuing):
-
-**Q1. Areas touched** — Which area(s) does this work touch?
+Wait for the user to answer, then make the **second AskUserQuestion call** — 3 questions:
 
 ```
-  a) [Web]     — Browser UI, pages, components, routing
-  b) [Backend] — API, database, business logic, background jobs
-  c) [iOS]     — Native iOS screens, views, navigation
-  d) [Admin]   — API keys, deployment, infrastructure, config
-  e) Multiple areas (I'll create one ticket per area)
+questions:
+  4. header: "Consumer"
+     question: "Who is the primary consumer of this work?"
+     multiSelect: false
+     options:
+       - label: "End users"
+         description: "Public-facing — people using the product"
+       - label: "Internal team / admins"
+         description: "People inside the company"
+       - label: "Mobile users specifically"
+         description: "People on the native iOS/Android app"
+       - label: "Third-party API clients"
+         description: "External developers calling your API"
+     (user can select Other to describe a different consumer)
+
+  5. header: "Success"
+     question: "How do you know this is done? Describe the desired end state in 1–2 sentences."
+     multiSelect: false
+     options:
+       - label: "User can do something they couldn't before"
+         description: "New capability added"
+       - label: "Existing flow is faster / more reliable"
+         description: "Performance or reliability improvement"
+       - label: "A specific bug or regression is resolved"
+         description: "Something broken is now fixed"
+       - label: "Internal tooling or infra change is live"
+         description: "Operational change is deployed and verified"
+     (user should select Other and type their specific success criteria)
+
+  6. header: "Constraints"
+     question: "Are there any hard constraints or non-negotiables?"
+     multiSelect: true
+     options:
+       - label: "Must use a specific library or technology"
+         description: "Engineering isn't free to choose the approach"
+       - label: "Must not break existing behavior"
+         description: "Backwards compatibility is required"
+       - label: "Must match existing UI/UX patterns"
+         description: "Design consistency is non-negotiable"
+       - label: "No specific constraints"
+         description: "Engineering judgment is fine"
+     (user can select Other to describe a custom constraint)
 ```
 
-**Q2. Nature of the work** — What kind of change is this?
-
-```
-  a) Net-new feature (doesn't exist at all)
-  b) Extension of existing feature (builds on what's there)
-  c) Refactor / improvement (same behavior, better internals)
-  d) Bug fix (something is broken)
-```
-
-**Q3. Priority**
-
-```
-  a) Urgent   — blocking production or an active release
-  b) High     — needed soon, next sprint
-  c) Normal   — standard backlog priority
-  d) Low      — nice to have
-```
-
-**Q4. User / consumer** — Who is the primary consumer of this work?
-
-```
-  (e.g., end users, internal team, mobile users, third-party API clients, admins)
-```
-
-**Q5. Success definition** — In one or two sentences, how do you know this is done? What's the desired end state?
-
-**Q6. Constraints or non-negotiables** — Are there any hard constraints? (specific library to use, must not break X, must match existing UI pattern, performance budget, etc.)
-
-Wait for user to answer all six before proceeding.
+Wait for the user to answer all questions before proceeding.
 
 ### Step 3: Phase 2 — Technical Deep Dive
 
-Based on the areas selected in Q1, ask targeted technical questions. If multiple areas were selected, go through each in sequence.
+Based on the areas selected in Q1, ask targeted technical questions using **AskUserQuestion** for structured choices. If multiple areas were selected, go through each in sequence.
 
-Display the phase header:
-
-```
-═══════════════════════════════════════════════════════════════
-  PHASE 2 OF 3: TECHNICAL DETAILS
-═══════════════════════════════════════════════════════════════
-```
+Tell the user: "Phase 2 of 3: Technical details for [area(s)]."
 
 ---
 
 #### [Backend] Questions
 
+**First AskUserQuestion call** — 3 questions:
+
 ```
-  ── BACKEND ─────────────────────────────────────────────────
+questions:
+  1. header: "Endpoints"
+     question: "What API endpoint changes are needed?"
+     multiSelect: false
+     options:
+       - label: "New endpoint(s)"
+         description: "Entirely new routes"
+       - label: "Modifying existing endpoint(s)"
+         description: "Changing behavior of existing routes"
+       - label: "Both new and modified endpoints"
+         description: "Mix of additions and changes"
+       - label: "No endpoint changes"
+         description: "Backend-only logic, no new API surface"
+     (user selects Other to give specific paths and methods)
+
+  2. header: "Data model"
+     question: "Are there database / data model changes?"
+     multiSelect: false
+     options:
+       - label: "New table(s) / collection(s)"
+         description: "Schema additions"
+       - label: "Modifying existing table(s)"
+         description: "Adding or changing columns/fields"
+       - label: "Both new and modified"
+         description: "Mix of additions and changes"
+       - label: "No data model changes"
+         description: "Logic only, schema stays the same"
+     (user selects Other to describe specifics)
+
+  3. header: "Side effects"
+     question: "Does this trigger any side effects?"
+     multiSelect: true
+     options:
+       - label: "Emails or push notifications"
+         description: "Messages sent to users"
+       - label: "Third-party API calls"
+         description: "Calls to external services (Stripe, Twilio, etc.)"
+       - label: "Background jobs or queues"
+         description: "Async processing"
+       - label: "No side effects"
+         description: "Self-contained, nothing else triggered"
+     (user can select Other for custom side effects)
 ```
 
-Ask all of the following (display as a numbered list for the user to answer):
+Wait for answers, then ask follow-up open questions as plain text:
 
-**B1. API Endpoints**
-What new endpoints are needed? For each:
-- HTTP method + path (e.g., `POST /api/v1/users/:id/profile`)
-- Authentication: public / requires auth / admin only
-- One-line description of what it does
+- **B1 (if endpoints):** "For each new/modified endpoint, describe: HTTP method + path, auth requirement (public/authed/admin), and what it does. Include request body shape and response shape."
+- **B2 (if data model):** "For each table change: table name, field name, type, nullable, default, and any indexes needed."
+- **B3 (always):** "What are the core business logic rules and validations? (e.g., 'email must be unique', 'user must own the resource')"
+- **B4 (if side effects):** "Describe each side effect in detail — what triggers it, what it does, and any retry/failure handling."
 
-If extending an existing endpoint — which one, and what changes?
+**Second AskUserQuestion call** — 3 questions:
 
-**B2. Request & Response Shape**
-What does the request body look like? What does the response return?
-(Rough is fine: e.g., "takes `{ name, bio, avatarUrl }` returns updated user object")
+```
+questions:
+  1. header: "Traffic volume"
+     question: "What's the expected traffic volume for this endpoint/feature?"
+     multiSelect: false
+     options:
+       - label: "Low"
+         description: "Infrequent calls, < 100 req/min"
+       - label: "Medium"
+         description: "Moderate load, 100–1000 req/min"
+       - label: "High"
+         description: "Heavy traffic, > 1000 req/min or bursts"
+       - label: "Unknown / not a concern"
+         description: "Optimize later if needed"
 
-**B3. Data Model Changes**
-New database tables/collections, or changes to existing ones?
-For each: table name → field name, type, nullable, default, index?
+  2. header: "Security"
+     question: "What security considerations apply?"
+     multiSelect: true
+     options:
+       - label: "Rate limiting needed"
+         description: "Prevent abuse of this endpoint"
+       - label: "Stores PII or sensitive data"
+         description: "Personal info, payment data, health info"
+       - label: "Requires audit logging"
+         description: "Changes must be tracked for compliance"
+       - label: "None of the above"
+         description: "Standard auth is sufficient"
 
-**B4. Business Logic & Validations**
-What are the core rules?
-(e.g., "email must be unique", "price must be > 0", "user must own the resource to edit it")
+  3. header: "Caching"
+     question: "Is caching needed?"
+     multiSelect: false
+     options:
+       - label: "Yes — response caching"
+         description: "Cache API responses (Redis, CDN, etc.)"
+       - label: "Yes — query/DB caching"
+         description: "Cache expensive DB queries"
+       - label: "No caching needed"
+         description: "Always fetch fresh"
+       - label: "Unsure"
+         description: "Leave for the implementer to decide"
+```
 
-**B5. Side Effects**
-Does this trigger anything else?
-- Emails or push notifications?
-- Updates to other records or caches?
-- Third-party API calls?
-- Background jobs or queues?
-
-**B6. Error Cases**
-What should happen when things fail?
-- What 400/422 validation errors are possible?
-- What 404 cases (resource not found)?
-- What 403 unauthorized cases?
-- Retry logic needed anywhere?
-
-**B7. Performance & Scalability**
-- Expected volume: low / medium / high traffic?
-- Caching needed? (what, for how long, invalidated by what?)
-- Any queries that could be slow? Indexes needed?
-- Pagination required?
-
-**B8. Security**
-- Rate limiting?
-- Input sanitization or special encoding concerns?
-- Sensitive data being stored (PII, payment info)?
-- Audit logging required?
-
-**B9. Testing**
-What test cases are critical to cover?
-(e.g., "unauthenticated requests rejected", "duplicate email returns 422", "pagination returns correct page size")
+Then ask as plain text:
+- **B5:** "What error cases should the API handle explicitly? (400/422 validations, 404 not found, 403 unauthorized, retry logic?)"
+- **B6:** "What test cases are critical to cover? (e.g., 'unauthenticated request returns 401', 'duplicate email returns 422')"
 
 ---
 
 #### [Web] Questions
 
+**First AskUserQuestion call** — 4 questions:
+
 ```
-  ── WEB ─────────────────────────────────────────────────────
+questions:
+  1. header: "Routes"
+     question: "What routing changes are involved?"
+     multiSelect: false
+     options:
+       - label: "New route(s) only"
+         description: "Adding pages that don't exist yet"
+       - label: "Modifying existing route(s)"
+         description: "Changing an existing page"
+       - label: "Both new and modified routes"
+         description: "Mix of additions and changes"
+       - label: "No routing changes"
+         description: "Components only, no new pages"
+
+  2. header: "Data fetching"
+     question: "How does this page get its data?"
+     multiSelect: false
+     options:
+       - label: "Fetched on page load"
+         description: "SSR / SSG or immediate client-side fetch on mount"
+       - label: "Fetched on user action"
+         description: "Data loads after a click, input, or trigger"
+       - label: "Mix of load + lazy"
+         description: "Initial load + additional fetches"
+       - label: "No data fetching"
+         description: "Fully static or local state only"
+
+  3. header: "Auth"
+     question: "What are the auth requirements for this UI?"
+     multiSelect: false
+     options:
+       - label: "Login required"
+         description: "Redirect to login if unauthenticated"
+       - label: "Public — no auth needed"
+         description: "Anyone can access this page"
+       - label: "Role-based differences"
+         description: "Admin sees X, regular user sees Y"
+       - label: "Mixed"
+         description: "Some parts public, some gated"
+
+  4. header: "Responsiveness"
+     question: "What's the layout/responsiveness approach?"
+     multiSelect: false
+     options:
+       - label: "Mobile-first"
+         description: "Designed for mobile, scales up"
+       - label: "Desktop-first"
+         description: "Designed for desktop, degrades gracefully"
+       - label: "Both treated equally"
+         description: "Fully responsive, both are first-class"
+       - label: "Desktop only"
+         description: "Not expected to work on mobile"
 ```
 
-Ask all of the following:
+**Second AskUserQuestion call** — 3 questions:
 
-**W1. Pages & Routes**
-What new routes are created, or existing routes are modified?
-(e.g., `/profile/edit` is new, `/settings` gets a new tab)
+```
+questions:
+  1. header: "Forms"
+     question: "Are there any forms in this feature?"
+     multiSelect: false
+     options:
+       - label: "Yes"
+         description: "I'll describe the fields and validation"
+       - label: "No forms"
+         description: "Read-only or navigation only"
 
-**W2. Components**
-What new components are needed?
-What existing components are modified?
-Roughly describe the layout/structure of each.
+  2. header: "Error/empty states"
+     question: "How should loading, empty, and error states be handled?"
+     multiSelect: false
+     options:
+       - label: "Skeleton loaders"
+         description: "Placeholder shapes while loading"
+       - label: "Spinner / progress indicator"
+         description: "Simple spinner while loading"
+       - label: "Match existing patterns"
+         description: "Copy whatever the codebase already does"
+       - label: "Custom — I'll describe"
+         description: "Specific requirements"
 
-**W3. Data & API Calls**
-- What endpoints does this call? (existing or new from backend ticket?)
-- What data is fetched on page load vs. on user action?
-- Any local state vs. server state distinction?
-- How is data stored client-side? (React Query, Zustand, context, local component state?)
+  3. header: "Analytics"
+     question: "Does this feature need analytics event tracking?"
+     multiSelect: false
+     options:
+       - label: "Yes — page view + key interactions"
+         description: "Standard tracking"
+       - label: "Yes — custom events"
+         description: "I'll specify exact event names"
+       - label: "No tracking needed"
+         description: "Skip analytics"
+       - label: "Unknown"
+         description: "Leave for product to specify"
+```
 
-**W4. User Flow — Step by Step**
-Walk me through the full user journey:
-1. User arrives at... (how?)
-2. They see...
-3. They do...
-4. Result / next step...
-5. Success state looks like...
-6. Error state looks like...
-
-**W5. Forms & Validation**
-Are there any forms? If yes:
-- Fields? (name, type, optional/required)
-- Validation rules? (required, min/max length, regex, etc.)
-- Submit behavior? (what API call, what happens on success?)
-- Where are errors shown? (inline under field, toast, banner?)
-
-**W6. Loading, Empty & Error States**
-- Loading state: skeleton, spinner, or nothing?
-- Empty state: what's shown when there's no data?
-- Error state: toast, inline message, full-page error?
-
-**W7. Responsiveness & Layout**
-- Mobile-first or desktop-first?
-- Any specific breakpoints that need special handling?
-- Any differences in behavior on mobile vs. desktop?
-
-**W8. Auth & Permissions**
-- Is this route gated behind login?
-- Any role-based UI differences? (admin sees X, regular user sees Y)
-- Redirect behavior for unauthenticated users?
-
-**W9. Analytics & Tracking**
-- Should any events be tracked? (page view, button click, form submit, etc.)
-- Which analytics tool is in use? (Segment, Mixpanel, GA4, PostHog, etc.)
-- Event names / properties to capture?
-
-**W10. Accessibility**
-- Any specific a11y requirements?
-- Keyboard navigation critical for any interactions?
-- ARIA labels or roles needed?
+Then ask as plain text:
+- **W1:** "Describe the routes: what new paths are created, or which existing ones change? (e.g., `/profile/edit` is new)"
+- **W2:** "What new components are needed, and which existing ones are modified? Describe the rough layout."
+- **W3:** "Walk me through the full user flow step by step: how do they arrive, what do they see, what do they do, what's the success state, what's the error state?"
+- **W4 (if forms):** "Describe each form: fields (name, type, required/optional), validation rules, submit behavior, where errors are shown."
 
 ---
 
 #### [iOS] Questions
 
+**First AskUserQuestion call** — 4 questions:
+
 ```
-  ── iOS ──────────────────────────────────────────────────────
+questions:
+  1. header: "Navigation"
+     question: "How does the user arrive at this screen?"
+     multiSelect: false
+     options:
+       - label: "Tab bar"
+         description: "A tab in the main tab bar"
+       - label: "Pushed onto navigation stack"
+         description: "NavigationLink / push navigation"
+       - label: "Modal / sheet"
+         description: "Presented over existing content"
+       - label: "Deep link"
+         description: "Launched from URL or notification"
+
+  2. header: "Layout type"
+     question: "What's the primary UI layout?"
+     multiSelect: false
+     options:
+       - label: "List / feed"
+         description: "Scrollable rows of items"
+       - label: "Form / input screen"
+         description: "Fields and controls for user input"
+       - label: "Detail / info screen"
+         description: "Displaying a single piece of content"
+       - label: "Custom / complex"
+         description: "Doesn't fit a standard pattern"
+
+  3. header: "Offline support"
+     question: "What should work without network connectivity?"
+     multiSelect: false
+     options:
+       - label: "Full offline support"
+         description: "All core features work offline"
+       - label: "Show cached data only"
+         description: "Read access to last fetched data"
+       - label: "No offline support"
+         description: "Gracefully show an error when offline"
+       - label: "Not applicable"
+         description: "Network is always required"
+
+  4. header: "iOS permissions"
+     question: "Which system permissions does this require?"
+     multiSelect: true
+     options:
+       - label: "Camera or Photos"
+         description: "Access to camera or photo library"
+       - label: "Notifications"
+         description: "Local or push notifications"
+       - label: "Location"
+         description: "User's location"
+       - label: "None"
+         description: "No system permissions needed"
+     (user can select Other for Microphone, Contacts, HealthKit, etc.)
 ```
 
-Ask all of the following:
+**Second AskUserQuestion call** — 3 questions:
 
-**I1. Screens & Views**
-What new screens or views are added?
-What existing screens are modified?
-Briefly describe what each screen contains.
+```
+questions:
+  1. header: "Platform features"
+     question: "Does this use any special iOS platform features?"
+     multiSelect: true
+     options:
+       - label: "Push notifications"
+         description: "Remote push via APNs"
+       - label: "Widgets or Live Activities"
+         description: "Home screen or Dynamic Island"
+       - label: "Face ID / Touch ID / Passkeys"
+         description: "Biometric or passkey auth"
+       - label: "None"
+         description: "Standard UIKit / SwiftUI only"
+     (user can select Other for deep links, in-app purchases, etc.)
 
-**I2. Navigation**
-- How does the user arrive at this screen? (tab bar, push, modal, sheet, deep link?)
-- What's the dismiss/back behavior?
-- Any deep link URLs to support?
+  2. header: "State management"
+     question: "What state management pattern should be used?"
+     multiSelect: false
+     options:
+       - label: "Match existing pattern"
+         description: "Whatever the codebase already uses"
+       - label: "ViewModel + ObservableObject"
+         description: "MVVM with Combine"
+       - label: "@State / @StateObject"
+         description: "SwiftUI native state"
+       - label: "SwiftData / CoreData"
+         description: "Persistent local data store"
 
-**I3. UI Layout & Interactions**
-Describe the layout:
-- List? Grid? Form? Custom?
-- Any custom gestures? (swipe, long press, pinch?)
-- Any animations or transitions?
+  3. header: "Testing"
+     question: "What testing is required?"
+     multiSelect: true
+     options:
+       - label: "Unit tests"
+         description: "Logic and ViewModel tests"
+       - label: "UI tests (XCTest)"
+         description: "Automated UI interaction tests"
+       - label: "No tests required"
+         description: "Manual QA only"
+       - label: "Snapshot tests"
+         description: "Visual regression testing"
+```
 
-**I4. Data & API**
-- Which endpoints does this call?
-- Local caching strategy? (CoreData, UserDefaults, in-memory, none?)
-- Offline behavior — what works without network connectivity?
-
-**I5. State Management**
-- ViewModel? ObservableObject? @State? SwiftData?
-- What triggers a re-render / reload?
-
-**I6. iOS Permissions**
-Any system permissions required?
-(Camera, Photos, Notifications, Location, Contacts, Microphone, HealthKit, etc.)
-
-**I7. Platform-Specific Features**
-Does this use any of the following?
-- Push notifications
-- Background fetch / processing
-- Widgets or Live Activities
-- App Clips
-- Face ID / Touch ID / Passkeys
-- In-app purchases
-- ShareSheet / UIActivityViewController
-- Universal Links / deep links
-
-**I8. Performance**
-- Long lists? (infinite scroll, pagination, lazy loading strategy?)
-- Heavy image loading? (caching approach?)
-- Anything that could block the main thread?
-
-**I9. Testing**
-- Unit test requirements?
-- UI test requirements (XCTest)?
-- Any simulator vs. real device specific requirements?
+Then ask as plain text:
+- **I1:** "Describe each new or modified screen: what does it display, what can the user do on it?"
+- **I2:** "Which API endpoints does this screen call? Describe what data is loaded on appear vs. on user action."
+- **I3 (if complex layout):** "Describe the UI layout in more detail — any custom gestures, animations, or interactions?"
 
 ---
 
 #### [Admin] Questions
 
+**AskUserQuestion call** — 3 questions:
+
 ```
-  ── ADMIN / INFRASTRUCTURE ──────────────────────────────────
+questions:
+  1. header: "Environments"
+     question: "Which environment(s) does this apply to?"
+     multiSelect: true
+     options:
+       - label: "Development"
+         description: "Local dev environment"
+       - label: "Staging"
+         description: "Pre-production / QA environment"
+       - label: "Production"
+         description: "Live production environment"
+       - label: "All environments"
+         description: "Applies everywhere"
+
+  2. header: "Rollback"
+     question: "If something goes wrong, how do we revert?"
+     multiSelect: false
+     options:
+       - label: "Easily reversible"
+         description: "Can be undone with a single action"
+       - label: "Requires manual steps"
+         description: "Reverting is possible but takes effort"
+       - label: "Not easily reversible"
+         description: "Destructive or hard to undo"
+       - label: "Unknown"
+         description: "Need to think through this"
+
+  3. header: "Documentation"
+     question: "Does this need to be documented?"
+     multiSelect: true
+     options:
+       - label: ".env.example"
+         description: "New environment variables"
+       - label: "README or runbook"
+         description: "Operational documentation"
+       - label: "Internal wiki or Notion"
+         description: "Team knowledge base"
+       - label: "No documentation needed"
+         description: "Self-explanatory change"
 ```
 
-Ask all of the following:
-
-**A1. What needs to be done?**
-Be specific:
-(e.g., "Add `STRIPE_WEBHOOK_SECRET` to Railway prod environment", "Configure S3 bucket CORS for uploads", "Set up Cloudflare Worker for edge caching")
-
-**A2. Environments**
-Which environment(s) does this apply to?
-- [ ] Development
-- [ ] Staging
-- [ ] Production
-- [ ] All
-
-**A3. Platforms & Services**
-Which services are involved?
-(e.g., Railway, Vercel, AWS, GCP, Heroku, Cloudflare, Datadog, Sentry, etc.)
-
-**A4. Credentials & Access**
-What credentials or access is required to complete this?
-Who needs to do it?
-
-**A5. Verification**
-How do we verify the work is done correctly after completing it?
-
-**A6. Documentation**
-Does this need to be documented anywhere?
-(`.env.example`, README, internal runbook, team wiki)
-
-**A7. Rollback Plan**
-If something goes wrong, how do we revert?
+Then ask as plain text:
+- **A1:** "Describe exactly what needs to be done. Be specific — include service names, config keys, and exact values where possible."
+- **A2:** "Which platforms/services are involved? (Railway, Vercel, AWS, GCP, Cloudflare, Datadog, etc.)"
+- **A3:** "What credentials or access are required? Who needs to perform this action?"
+- **A4:** "How do we verify it's done correctly after completing it?"
 
 ---
 
@@ -430,49 +613,90 @@ Wait for user to answer all questions in the relevant area(s) before continuing.
 
 ### Step 4: Phase 3 — Extra Considerations
 
-Always ask this final round, regardless of area. These surface things the user likely didn't think about.
+Always ask this final round, regardless of area. Tell the user: "Phase 3 of 3: A few more things worth locking down before I write the ticket."
+
+Use **AskUserQuestion** with two sequential calls:
+
+**First AskUserQuestion call** — 3 questions:
 
 ```
-═══════════════════════════════════════════════════════════════
-  PHASE 3 OF 3: EXTRA CONSIDERATIONS
-  (things worth locking down before we write the tickets)
-═══════════════════════════════════════════════════════════════
+questions:
+  1. header: "Edge cases"
+     question: "Which edge cases are most likely to cause problems?"
+     multiSelect: true
+     options:
+       - label: "Concurrent access"
+         description: "Two users acting on the same resource simultaneously"
+       - label: "Empty / null values"
+         description: "Missing or null data in unexpected places"
+       - label: "Network failure mid-operation"
+         description: "Request fails partway through a multi-step action"
+       - label: "None I can think of"
+         description: "Standard cases only"
+     (user can select Other to describe specific edge cases)
+
+  2. header: "Backwards compat"
+     question: "Does this change anything existing users or consumers rely on?"
+     multiSelect: false
+     options:
+       - label: "Yes — breaking API or schema change"
+         description: "Migration or versioning strategy needed"
+       - label: "Yes — but backwards compatible"
+         description: "Additive change, existing behavior preserved"
+       - label: "No — entirely new surface"
+         description: "Nothing existing is affected"
+       - label: "Needs a feature flag"
+         description: "Should be dark-launched to roll out safely"
+
+  3. header: "Rollout"
+     question: "How should this be rolled out?"
+     multiSelect: false
+     options:
+       - label: "Ship all at once"
+         description: "No special rollout — merge and deploy"
+       - label: "Feature flag"
+         description: "Dark launch, enable for users gradually"
+       - label: "Phased rollout"
+         description: "Deploy to a subset of users/traffic first"
+       - label: "Needs user communication"
+         description: "Email, in-app notice, or changelog required"
 ```
 
-**E1. Edge Cases**
-What are the tricky edge cases? Think about:
-- Two users acting on the same resource simultaneously
-- Empty or null values in unexpected places
-- Very large data sets or long strings
-- Network failure mid-operation
-- Clock skew / timezone issues
+**Second AskUserQuestion call** — 2 questions:
 
-**E2. Backwards Compatibility**
-Does this change anything that existing users or consumers rely on?
-- Breaking API changes?
-- Data migration strategy for existing records?
-- Feature flag needed to roll out safely?
+```
+questions:
+  1. header: "Monitoring"
+     question: "What monitoring or observability changes are needed?"
+     multiSelect: true
+     options:
+       - label: "New metrics or dashboards"
+         description: "Track a new signal in production"
+       - label: "New alerts"
+         description: "Alert if error rate or latency spikes"
+       - label: "No changes needed"
+         description: "Existing monitoring is sufficient"
+       - label: "Unknown"
+         description: "Leave for the implementer to assess"
 
-**E3. Rollout Strategy**
-- Can this ship all at once, or does it need a phased rollout?
-- Any dark launch / feature flag?
-- Any user-facing communication needed? (email, in-app notice, changelog)
+  2. header: "Dependencies"
+     question: "Are there any dependencies on other work?"
+     multiSelect: false
+     options:
+       - label: "Blocked by another ticket"
+         description: "Can't start until something else ships"
+       - label: "Blocks another ticket"
+         description: "Something else is waiting on this"
+       - label: "External dependency"
+         description: "Waiting on a third-party API, library, or team"
+       - label: "No dependencies"
+         description: "Can be picked up and implemented independently"
+```
 
-**E4. Monitoring & Alerting**
-- Any new metrics, logs, or traces to add?
-- Any alerts that should fire if this breaks in production?
-- Error rate thresholds?
+Then ask as plain text:
+- **E1 (always):** "What should explicitly NOT be done in this ticket? List things out of scope — this protects the implementing agent from scope creep."
 
-**E5. Dependencies**
-- Does this block or get blocked by any other tickets?
-- Any external team or third-party dependency?
-- Any API rate limits or quotas to be aware of?
-
-**E6. Out of Scope**
-What should explicitly **NOT** be done in this ticket?
-(This is critical — helps the implementing agent avoid scope creep)
-
-Wait for user to answer. Then proceed to drafting.
+Wait for the user to answer. Then proceed to drafting.
 
 ### Step 5: Draft Tickets
 
@@ -705,6 +929,8 @@ For each ticket:
 ## Notes
 
 - **Question mode is mandatory** — never skip to drafting without completing all three phases
+- **Use AskUserQuestion tool** for all structured questions — never fall back to plain text numbered lists for Phase 1, Phase 2 structured choices, or Phase 3
+- For purely narrative questions (e.g., "describe the user flow step by step"), ask as plain text after the AskUserQuestion call for that phase
 - Always reference actual codebase files and patterns discovered in Step 1
 - The ticket description should be complete enough for `/robot-surf` to implement without any human interaction
 - Don't over-specify implementation — specify WHAT to do, not every line of HOW
