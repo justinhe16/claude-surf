@@ -35,6 +35,7 @@ cp -r .claude/skills/robot-surf ~/.claude/skills/
 cp -r .claude/skills/robot-surf-prompt ~/.claude/skills/
 cp -r .claude/skills/check-surf ~/.claude/skills/
 cp -r .claude/skills/prep-surf ~/.claude/skills/
+cp -r .claude/skills/linear-surf ~/.claude/skills/
 ```
 
 ### Step 4: Copy Settings
@@ -71,6 +72,7 @@ Tell the user what was installed:
 - robot-surf-prompt
 - check-surf
 - prep-surf
+- linear-surf
 
 **Settings installed to `~/.claude/`:**
 - settings.json (includes Edit/Write/Read permissions - no more prompts!)
@@ -82,6 +84,7 @@ Tell the user what was installed:
   - `/prep-surf` — install missing prerequisites
   - `/solo-surf feature/my-branch` — create worktree + new terminal
   - `/robot-surf ENG-123` — fully autonomous ticket implementation
+  - `/linear-surf "description"` — deep planning: creates comprehensive, scoped Linear tickets via MCP
 
 ## Notes
 
